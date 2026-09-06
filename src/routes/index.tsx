@@ -38,6 +38,9 @@ function Directory() {
   const [search, setSearch] = useState("");
   const [limit, setLimit] = useState(PAGE_SIZE);
 
+  // Debounced so typing doesn't fire a database query per keystroke.
+  const debouncedSearch = useDebouncedValue(search, 300);
+
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
@@ -46,14 +49,21 @@ function Directory() {
     queryKey: ["tags"],
     queryFn: fetchTags,
   });
-  const { data, isFetching } = useQuery({
-    queryKey: ["people", categoryId, selectedTagIds, search, limit],
+  const { data, isFetching, isPending, isError, error, refetch } = useQuery({
+    queryKey: ["people", categoryId, selectedTagIds, debouncedSearch, limit],
     queryFn: () =>
-      fetchPeople({ categoryId, tagIds: selectedTagIds, search, limit }),
+      fetchPeople({
+        categoryId,
+        tagIds: selectedTagIds,
+        search: debouncedSearch,
+        limit,
+      }),
+    placeholderData: keepPreviousData,
   });
 
   const people = data?.people ?? [];
   const total = data?.total ?? 0;
+
 
   const resetPaging = () => setLimit(PAGE_SIZE);
 
