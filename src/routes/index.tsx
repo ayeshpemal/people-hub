@@ -143,41 +143,33 @@ function Directory() {
       <div className="sticky top-[57px] z-10 bg-silver/95 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex flex-wrap items-center gap-2 border-b border-ink/5 pb-3">
-            <span className="mr-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-              Category
-            </span>
-            <button
-              onClick={() => {
-                resetPaging();
-                setCategoryId(null);
-              }}
-              className={
-                categoryId === null
-                  ? "rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-ink-foreground transition-transform hover:-translate-y-0.5"
-                  : "rounded-full bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground ring-1 ring-ink/5 transition-transform hover:-translate-y-0.5"
-              }
+            <label
+              htmlFor="category-filter"
+              className="mr-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
             >
-              All
-            </button>
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => {
+              Category
+            </label>
+            <div className="relative">
+              <select
+                id="category-filter"
+                value={categoryId ?? ""}
+                onChange={(e) => {
                   resetPaging();
-                  setCategoryId(
-                    categoryId === category.id ? null : category.id,
-                  );
+                  setCategoryId(e.target.value || null);
                 }}
-                className={
-                  categoryId === category.id
-                    ? "rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-ink-foreground transition-transform hover:-translate-y-0.5"
-                    : "rounded-full bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground ring-1 ring-ink/5 transition-transform hover:-translate-y-0.5"
-                }
+                className="appearance-none rounded-full bg-card py-1.5 pr-8 pl-3 text-xs font-medium text-ink ring-1 ring-ink/5 outline-none focus:ring-2 focus:ring-brand/40"
               >
-                {category.name}
-              </button>
-            ))}
+                <option value="">All categories</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+            </div>
           </div>
+
           <div className="flex flex-wrap items-center gap-2 pb-3 pt-2.5">
             <span className="mr-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
               Tags
