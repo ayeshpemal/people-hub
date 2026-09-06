@@ -79,14 +79,24 @@ function Directory() {
               Directory
             </span>
           </div>
-          <div className="ml-auto hidden items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 ring-1 ring-ink/5 sm:flex">
-            <Users className="size-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
-              {total} people
-            </span>
+          <div className="ml-auto flex items-center gap-2">
+            <div className="hidden items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 ring-1 ring-ink/5 sm:flex">
+              <Users className="size-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">
+                {total} people
+              </span>
+            </div>
+            <Link
+              to="/add-person"
+              className="inline-flex items-center gap-1.5 rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink px-3 py-2 text-sm font-medium text-ink-foreground shadow-inner ring-1 ring-brand/40 transition-transform hover:-translate-y-0.5"
+            >
+              <Plus className="size-4 shrink-0" />
+              Add person
+            </Link>
           </div>
         </div>
       </div>
+
 
       {/* Header */}
       <div className="bg-silver">
