@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { ChevronDown, Plus, Search, Users } from "lucide-react";
+import { AlertTriangle, ChevronDown, Plus, Search, Users } from "lucide-react";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
+
 
 import {
   fetchCategories,
@@ -38,6 +40,9 @@ function Directory() {
   const [search, setSearch] = useState("");
   const [limit, setLimit] = useState(PAGE_SIZE);
 
+  // Debounced so typing doesn't fire a database query per keystroke.
+  const debouncedSearch = useDebouncedValue(search, 300);
+
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
@@ -46,14 +51,21 @@ function Directory() {
     queryKey: ["tags"],
     queryFn: fetchTags,
   });
-  const { data, isFetching } = useQuery({
-    queryKey: ["people", categoryId, selectedTagIds, search, limit],
+  const { data, isFetching, isPending, isError, error, refetch } = useQuery({
+    queryKey: ["people", categoryId, selectedTagIds, debouncedSearch, limit],
     queryFn: () =>
-      fetchPeople({ categoryId, tagIds: selectedTagIds, search, limit }),
+      fetchPeople({
+        categoryId,
+        tagIds: selectedTagIds,
+        search: debouncedSearch,
+        limit,
+      }),
+    placeholderData: keepPreviousData,
   });
 
   const people = data?.people ?? [];
   const total = data?.total ?? 0;
+
 
   const resetPaging = () => setLimit(PAGE_SIZE);
 
@@ -131,41 +143,33 @@ function Directory() {
       <div className="sticky top-[57px] z-10 bg-silver/95 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="flex flex-wrap items-center gap-2 border-b border-ink/5 pb-3">
-            <span className="mr-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-              Category
-            </span>
-            <button
-              onClick={() => {
-                resetPaging();
-                setCategoryId(null);
-              }}
-              className={
-                categoryId === null
-                  ? "rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-ink-foreground transition-transform hover:-translate-y-0.5"
-                  : "rounded-full bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground ring-1 ring-ink/5 transition-transform hover:-translate-y-0.5"
-              }
+            <label
+              htmlFor="category-filter"
+              className="mr-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
             >
-              All
-            </button>
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => {
+              Category
+            </label>
+            <div className="relative">
+              <select
+                id="category-filter"
+                value={categoryId ?? ""}
+                onChange={(e) => {
                   resetPaging();
-                  setCategoryId(
-                    categoryId === category.id ? null : category.id,
-                  );
+                  setCategoryId(e.target.value || null);
                 }}
-                className={
-                  categoryId === category.id
-                    ? "rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-ink-foreground transition-transform hover:-translate-y-0.5"
-                    : "rounded-full bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground ring-1 ring-ink/5 transition-transform hover:-translate-y-0.5"
-                }
+                className="appearance-none rounded-full bg-card py-1.5 pr-8 pl-3 text-xs font-medium text-ink ring-1 ring-ink/5 outline-none focus:ring-2 focus:ring-brand/40"
               >
-                {category.name}
-              </button>
-            ))}
+                <option value="">All categories</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+            </div>
           </div>
+
           <div className="flex flex-wrap items-center gap-2 pb-3 pt-2.5">
             <span className="mr-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
               Tags
@@ -204,7 +208,38 @@ function Directory() {
             </span>
           </div>
 
-          {people.length === 0 && !isFetching ? (
+          {isPending ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="overflow-hidden rounded-[min(1.4vw,16px)] bg-card ring-1 ring-ink/5"
+                >
+                  <div className="aspect-square w-full animate-pulse bg-silver" />
+                  <div className="flex flex-col gap-2 p-4">
+                    <div className="h-4 w-1/2 animate-pulse rounded bg-silver" />
+                    <div className="h-3 w-full animate-pulse rounded bg-silver" />
+                    <div className="h-3 w-2/3 animate-pulse rounded bg-silver" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : isError ? (
+            <div className="flex flex-col items-center gap-3 rounded-[min(1.4vw,16px)] bg-card py-16 ring-1 ring-ink/5">
+              <AlertTriangle className="size-6 text-destructive" />
+              <p className="text-sm text-muted-foreground">
+                {error instanceof Error
+                  ? error.message
+                  : "We couldn't load the directory."}
+              </p>
+              <button
+                onClick={() => refetch()}
+                className="rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-ink-foreground transition-transform hover:-translate-y-0.5"
+              >
+                Try again
+              </button>
+            </div>
+          ) : people.length === 0 ? (
             <div className="flex flex-col items-center gap-2 rounded-[min(1.4vw,16px)] bg-card py-16 ring-1 ring-ink/5">
               <Search className="size-6 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
@@ -212,6 +247,7 @@ function Directory() {
               </p>
             </div>
           ) : (
+
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {people.map((person, index) => (
                 <article
