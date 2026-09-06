@@ -208,7 +208,38 @@ function Directory() {
             </span>
           </div>
 
-          {people.length === 0 && !isFetching ? (
+          {isPending ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="overflow-hidden rounded-[min(1.4vw,16px)] bg-card ring-1 ring-ink/5"
+                >
+                  <div className="aspect-square w-full animate-pulse bg-silver" />
+                  <div className="flex flex-col gap-2 p-4">
+                    <div className="h-4 w-1/2 animate-pulse rounded bg-silver" />
+                    <div className="h-3 w-full animate-pulse rounded bg-silver" />
+                    <div className="h-3 w-2/3 animate-pulse rounded bg-silver" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : isError ? (
+            <div className="flex flex-col items-center gap-3 rounded-[min(1.4vw,16px)] bg-card py-16 ring-1 ring-ink/5">
+              <AlertTriangle className="size-6 text-destructive" />
+              <p className="text-sm text-muted-foreground">
+                {error instanceof Error
+                  ? error.message
+                  : "We couldn't load the directory."}
+              </p>
+              <button
+                onClick={() => refetch()}
+                className="rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-ink-foreground transition-transform hover:-translate-y-0.5"
+              >
+                Try again
+              </button>
+            </div>
+          ) : people.length === 0 ? (
             <div className="flex flex-col items-center gap-2 rounded-[min(1.4vw,16px)] bg-card py-16 ring-1 ring-ink/5">
               <Search className="size-6 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
@@ -216,6 +247,7 @@ function Directory() {
               </p>
             </div>
           ) : (
+
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {people.map((person, index) => (
                 <article
