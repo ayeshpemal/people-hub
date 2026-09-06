@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { ChevronDown, Search, Users } from "lucide-react";
+import { ChevronDown, Plus, Search, Users } from "lucide-react";
+
 import {
   fetchCategories,
   fetchPeople,
