@@ -256,14 +256,19 @@ function AddPerson() {
           <div className="flex items-center gap-3">
             <button
               type="submit"
-              disabled={mutation.isPending || !name.trim()}
+              disabled={mutation.isPending || isCompressing || !name.trim()}
               className="inline-flex items-center gap-2 rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink px-4 py-2 text-sm font-medium text-ink-foreground shadow-inner ring-1 ring-brand/40 transition-transform duration-200 hover:-translate-y-0.5 disabled:opacity-60"
             >
-              {mutation.isPending && (
+              {(mutation.isPending || isCompressing) && (
                 <Loader2 className="size-4 shrink-0 animate-spin" />
               )}
-              {mutation.isPending ? "Saving…" : "Add to directory"}
+              {mutation.isPending
+                ? "Saving…"
+                : isCompressing
+                  ? "Optimising photo…"
+                  : "Add to directory"}
             </button>
+
             <Link to="/" className="text-sm text-muted-foreground hover:text-ink">
               Cancel
             </Link>
