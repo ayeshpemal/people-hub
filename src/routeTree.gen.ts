@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AddPersonRouteImport } from './routes/add-person'
+import { Route as ManageDataRouteImport } from './routes/manage-data'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const AddPersonRoute = AddPersonRouteImport.update({
   path: '/add-person',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ManageDataRoute = ManageDataRouteImport.update({
+  id: '/manage-data',
+  path: '/manage-data',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/add-person': typeof AddPersonRoute
+  '/manage-data': typeof ManageDataRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/add-person': typeof AddPersonRoute
+  '/manage-data': typeof ManageDataRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/add-person': typeof AddPersonRoute
+  '/manage-data': typeof ManageDataRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/add-person'
+  fullPaths: '/' | '/add-person' | '/manage-data'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/add-person'
-  id: '__root__' | '/' | '/add-person'
+  to: '/' | '/add-person' | '/manage-data'
+  id: '__root__' | '/' | '/add-person' | '/manage-data'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AddPersonRoute: typeof AddPersonRoute
+  ManageDataRoute: typeof ManageDataRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AddPersonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/manage-data': {
+      id: '/manage-data'
+      path: '/manage-data'
+      fullPath: '/manage-data'
+      preLoaderRoute: typeof ManageDataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddPersonRoute: AddPersonRoute,
+  ManageDataRoute: ManageDataRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
