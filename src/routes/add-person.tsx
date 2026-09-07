@@ -42,9 +42,11 @@ function AddPerson() {
   const [categoryId, setCategoryId] = useState("");
   const [tagIds, setTagIds] = useState<string[]>([]);
   const [image, setImage] = useState<File | null>(null);
+  const [isCompressing, setIsCompressing] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [previewInfo, setPreviewInfo] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
+
 
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
@@ -71,9 +73,13 @@ function AddPerson() {
     setPreviewError(null);
     setPreviewInfo(null);
     setImage(file);
+    setIsCompressing(true);
     if (preview) URL.revokeObjectURL(preview);
     setPreview(null);
-    if (!file) return;
+    if (!file) {
+      setIsCompressing(false);
+      return;
+    }
     try {
       const compressed = await compressImage(file);
       setPreview(URL.createObjectURL(compressed.file));
@@ -87,8 +93,11 @@ function AddPerson() {
         error instanceof Error ? error.message : "Could not prepare that image.",
       );
       setImage(null);
+    } finally {
+      setIsCompressing(false);
     }
   };
+
 
   const toggleTag = (id: string) =>
     setTagIds((prev) =>
@@ -124,9 +133,10 @@ function AddPerson() {
           className="mt-6 flex flex-col gap-5"
           onSubmit={(e) => {
             e.preventDefault();
-            if (!name.trim() || mutation.isPending) return;
+            if (!name.trim() || mutation.isPending || isCompressing) return;
             mutation.mutate();
           }}
+
         >
           <div className="flex flex-col gap-1.5">
             <label className={labelCls} htmlFor="name">
@@ -246,14 +256,19 @@ function AddPerson() {
           <div className="flex items-center gap-3">
             <button
               type="submit"
-              disabled={mutation.isPending || !name.trim()}
+              disabled={mutation.isPending || isCompressing || !name.trim()}
               className="inline-flex items-center gap-2 rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink px-4 py-2 text-sm font-medium text-ink-foreground shadow-inner ring-1 ring-brand/40 transition-transform duration-200 hover:-translate-y-0.5 disabled:opacity-60"
             >
-              {mutation.isPending && (
+              {(mutation.isPending || isCompressing) && (
                 <Loader2 className="size-4 shrink-0 animate-spin" />
               )}
-              {mutation.isPending ? "Saving…" : "Add to directory"}
+              {mutation.isPending
+                ? "Saving…"
+                : isCompressing
+                  ? "Optimising photo…"
+                  : "Add to directory"}
             </button>
+
             <Link to="/" className="text-sm text-muted-foreground hover:text-ink">
               Cancel
             </Link>
