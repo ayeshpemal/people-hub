@@ -73,9 +73,13 @@ function AddPerson() {
     setPreviewError(null);
     setPreviewInfo(null);
     setImage(file);
+    setIsCompressing(true);
     if (preview) URL.revokeObjectURL(preview);
     setPreview(null);
-    if (!file) return;
+    if (!file) {
+      setIsCompressing(false);
+      return;
+    }
     try {
       const compressed = await compressImage(file);
       setPreview(URL.createObjectURL(compressed.file));
@@ -89,8 +93,11 @@ function AddPerson() {
         error instanceof Error ? error.message : "Could not prepare that image.",
       );
       setImage(null);
+    } finally {
+      setIsCompressing(false);
     }
   };
+
 
   const toggleTag = (id: string) =>
     setTagIds((prev) =>
