@@ -42,9 +42,11 @@ function AddPerson() {
   const [categoryId, setCategoryId] = useState("");
   const [tagIds, setTagIds] = useState<string[]>([]);
   const [image, setImage] = useState<File | null>(null);
+  const [isCompressing, setIsCompressing] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [previewInfo, setPreviewInfo] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
+
 
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
