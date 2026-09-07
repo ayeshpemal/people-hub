@@ -133,9 +133,10 @@ function AddPerson() {
           className="mt-6 flex flex-col gap-5"
           onSubmit={(e) => {
             e.preventDefault();
-            if (!name.trim() || mutation.isPending) return;
+            if (!name.trim() || mutation.isPending || isCompressing) return;
             mutation.mutate();
           }}
+
         >
           <div className="flex flex-col gap-1.5">
             <label className={labelCls} htmlFor="name">
