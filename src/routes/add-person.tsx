@@ -5,6 +5,11 @@ import { ArrowLeft, ImageUp, Loader2 } from "lucide-react";
 import { fetchCategories, fetchTags } from "@/lib/directory";
 import { createPerson } from "@/lib/add-person";
 import { compressImage } from "@/lib/image-compression";
+import { CreatableSelect } from "@/components/creatable-select";
+import {
+  findOrCreateTaxonomyItem,
+  type TaxonomyKind,
+} from "@/lib/taxonomy";
 
 export const Route = createFileRoute("/add-person")({
   head: () => ({
@@ -99,10 +104,11 @@ function AddPerson() {
   };
 
 
-  const toggleTag = (id: string) =>
-    setTagIds((prev) =>
-      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id],
-    );
+  const createTaxonomy = async (kind: TaxonomyKind, value: string) => {
+    const item = await findOrCreateTaxonomyItem(kind, value);
+    await queryClient.invalidateQueries({ queryKey: [kind] });
+    return item;
+  };
 
   return (
     <div className="min-h-screen bg-silver font-sans text-ink antialiased">
@@ -170,43 +176,31 @@ function AddPerson() {
             <label className={labelCls} htmlFor="category">
               Category
             </label>
-            <select
+            <CreatableSelect
               id="category"
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              className={field}
-            >
-              <option value="">No category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
+              kind="categories"
+              items={categories}
+              value={categoryId ? [categoryId] : []}
+              onChange={(ids) => setCategoryId(ids[0] ?? "")}
+              onCreate={(value) => createTaxonomy("categories", value)}
+              placeholder="Search or create a category…"
+            />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <span className={labelCls}>Tags</span>
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => {
-                const active = tagIds.includes(tag.id);
-                return (
-                  <button
-                    type="button"
-                    key={tag.id}
-                    aria-pressed={active}
-                    onClick={() => toggleTag(tag.id)}
-                    className={
-                      active
-                        ? "rounded-full bg-brand/10 px-2.5 py-1 text-xs font-medium text-brand ring-1 ring-brand/20 transition-transform hover:-translate-y-0.5"
-                        : "rounded-full bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground ring-1 ring-ink/5 transition-transform hover:-translate-y-0.5"
-                    }
-                  >
-                    {tag.name}
-                  </button>
-                );
-              })}
-            </div>
+          <div className="flex flex-col gap-1.5">
+            <label className={labelCls} htmlFor="tags">
+              Tags
+            </label>
+            <CreatableSelect
+              id="tags"
+              kind="tags"
+              multi
+              items={tags}
+              value={tagIds}
+              onChange={setTagIds}
+              onCreate={(value) => createTaxonomy("tags", value)}
+              placeholder="Search or create tags…"
+            />
           </div>
 
           <div className="flex flex-col gap-2">
