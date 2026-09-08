@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { AlertTriangle, ChevronDown, Plus, Search, Users } from "lucide-react";
+import { AlertTriangle, ChevronDown, Plus, Search, Settings2, Users } from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
 
@@ -99,6 +99,13 @@ function Directory() {
                 {total} people
               </span>
             </div>
+            <Link
+              to="/manage-data"
+              className="hidden items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 text-sm font-medium text-ink ring-1 ring-ink/5 transition-transform hover:-translate-y-0.5 sm:inline-flex"
+            >
+              <Settings2 className="size-4 shrink-0" />
+              Manage data
+            </Link>
             <Link
               to="/add-person"
               className="inline-flex items-center gap-1.5 rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink px-3 py-2 text-sm font-medium text-ink-foreground shadow-inner ring-1 ring-brand/40 transition-transform hover:-translate-y-0.5"

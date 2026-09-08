@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 
-import { fetchCategories, fetchTags, type Category } from "@/lib/directory";
+import { fetchCategories, fetchTags } from "@/lib/directory";
 import {
   MAX_NAME_LENGTH,
   createTaxonomyItem,
@@ -409,5 +409,3 @@ function readableError(err: unknown, fallback: string) {
   }
   return fallback;
 }
-
-export type { Category };
