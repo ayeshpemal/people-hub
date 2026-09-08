@@ -88,3 +88,58 @@ export async function fetchUsageCounts(
   }
   return counts;
 }
+
+/** Tags are lowercased, categories are Title Cased; whitespace always collapsed. */
+export function normalizeName(kind: TaxonomyKind, raw: string): string {
+  const base = raw.trim().replace(/\s+/g, " ");
+  if (kind === "tags") return base.toLowerCase();
+  return base
+    .split(" ")
+    .map((word) =>
+      word.length <= 1
+        ? word.toUpperCase()
+        : word[0].toUpperCase() + word.slice(1).toLowerCase(),
+    )
+    .join(" ");
+}
+
+/**
+ * Normalize, then reuse an existing row (case-insensitive) instead of hitting a
+ * unique-constraint error. Only inserts when nothing matches.
+ */
+export async function findOrCreateTaxonomyItem(
+  kind: TaxonomyKind,
+  raw: string,
+): Promise<TaxonomyItem> {
+  const name = normalizeName(kind, raw);
+  if (!name) throw new Error("Please enter a name.");
+  if (name.length > MAX_NAME_LENGTH)
+    throw new Error(`Keep it to ${MAX_NAME_LENGTH} characters or fewer.`);
+
+  const { data: existing, error: lookupError } = await supabase
+    .from(kind)
+    .select("id, name")
+    .ilike("name", name)
+    .limit(1)
+    .maybeSingle();
+  if (lookupError) throw lookupError;
+  if (existing) return existing;
+
+  const { data, error } = await supabase
+    .from(kind)
+    .insert({ name })
+    .select("id, name")
+    .single();
+  if (error) {
+    // Lost a race with another insert — fall back to the existing row.
+    const { data: raced } = await supabase
+      .from(kind)
+      .select("id, name")
+      .ilike("name", name)
+      .limit(1)
+      .maybeSingle();
+    if (raced) return raced;
+    throw error;
+  }
+  return data;
+}
