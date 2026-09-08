@@ -98,7 +98,7 @@ export function normalizeName(kind: TaxonomyKind, raw: string): string {
     .map((word) =>
       word.length <= 1
         ? word.toUpperCase()
-        : word[0].toUpperCase() + word.slice(1).toLowerCase(),
+        : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
     )
     .join(" ");
 }
