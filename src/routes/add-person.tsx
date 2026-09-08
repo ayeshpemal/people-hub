@@ -5,6 +5,11 @@ import { ArrowLeft, ImageUp, Loader2 } from "lucide-react";
 import { fetchCategories, fetchTags } from "@/lib/directory";
 import { createPerson } from "@/lib/add-person";
 import { compressImage } from "@/lib/image-compression";
+import { CreatableSelect } from "@/components/creatable-select";
+import {
+  findOrCreateTaxonomyItem,
+  type TaxonomyKind,
+} from "@/lib/taxonomy";
 
 export const Route = createFileRoute("/add-person")({
   head: () => ({
@@ -99,10 +104,11 @@ function AddPerson() {
   };
 
 
-  const toggleTag = (id: string) =>
-    setTagIds((prev) =>
-      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id],
-    );
+  const createTaxonomy = async (kind: TaxonomyKind, value: string) => {
+    const item = await findOrCreateTaxonomyItem(kind, value);
+    await queryClient.invalidateQueries({ queryKey: [kind] });
+    return item;
+  };
 
   return (
     <div className="min-h-screen bg-silver font-sans text-ink antialiased">
