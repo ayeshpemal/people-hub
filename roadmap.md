@@ -6,3 +6,4 @@
 - [x] /add-person route with browser-side image compression and upload
 - [x] Directory page with server-side filtering and joins
 - [x] Debounced search, category dropdown, tag pills, skeletons, error state
+- [x] /manage-data dashboard: create, rename, delete categories & tags with optimistic UI
