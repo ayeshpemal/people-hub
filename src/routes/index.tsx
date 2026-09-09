@@ -367,7 +367,27 @@ function Directory() {
                         ))}
                       </div>
                     )}
+                    <div className="mt-4 flex items-center gap-2 border-t border-ink/5 pt-3">
+                      <button
+                        type="button"
+                        onClick={() => setEditing(person)}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-card px-2.5 py-1 text-xs font-medium text-ink ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5"
+                      >
+                        <Pencil className="size-3.5" /> Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDeleteError(null);
+                          setPendingDelete(person);
+                        }}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-card px-2.5 py-1 text-xs font-medium text-destructive ring-1 ring-destructive/20 transition-transform hover:-translate-y-0.5"
+                      >
+                        <Trash2 className="size-3.5" /> Delete
+                      </button>
+                    </div>
                   </div>
+
                 </article>
               ))}
             </div>
