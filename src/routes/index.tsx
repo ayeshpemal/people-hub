@@ -408,6 +408,56 @@ function Directory() {
           )}
         </div>
       </div>
+
+      {editing && (
+        <EditPersonDialog
+          person={editing}
+          onClose={() => setEditing(null)}
+          onSaved={(updated) => patchCache(updated.id, () => updated)}
+        />
+      )}
+
+      {pendingDelete && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-ink/40 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Delete ${pendingDelete.name}`}
+        >
+          <div className="w-full max-w-sm rounded-[min(1.4vw,16px)] bg-silver p-5 ring-1 ring-ink/10">
+            <h2 className="font-display text-lg font-semibold tracking-tight">
+              Delete {pendingDelete.name}?
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              This removes the profile and its photo for good, along with its tag
+              links. This can't be undone.
+            </p>
+            {deleteError && (
+              <p className="mt-3 text-sm text-destructive">{deleteError}</p>
+            )}
+            <div className="mt-5 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setPendingDelete(null)}
+                disabled={isDeleting}
+                className="text-sm text-muted-foreground hover:text-ink disabled:opacity-60"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => void confirmDelete()}
+                disabled={isDeleting}
+                className="inline-flex items-center gap-2 rounded-[min(1vw,10px)] bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-transform hover:-translate-y-0.5 disabled:opacity-60"
+              >
+                {isDeleting && <Loader2 className="size-4 animate-spin" />}
+                {isDeleting ? "Deleting…" : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
+
   );
 }
