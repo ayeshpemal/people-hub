@@ -1,8 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { AlertTriangle, ChevronDown, Plus, Search, Settings2, Users } from "lucide-react";
+import {
+  AlertTriangle,
+  ChevronDown,
+  Loader2,
+  Pencil,
+  Plus,
+  Search,
+  Settings2,
+  Trash2,
+  Users,
+} from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { EditPersonDialog } from "@/components/edit-person-dialog";
+import { deletePerson } from "@/lib/person-mutations";
 
 
 import {
@@ -10,7 +22,10 @@ import {
   fetchPeople,
   fetchTags,
   PAGE_SIZE,
+  type DirectoryPerson,
+  type PeoplePage,
 } from "@/lib/directory";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -66,6 +81,51 @@ function Directory() {
   const people = data?.people ?? [];
   const total = data?.total ?? 0;
 
+  const queryClient = useQueryClient();
+  const [editing, setEditing] = useState<DirectoryPerson | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<DirectoryPerson | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  /** Patch every cached page so the grid updates without a refetch. */
+  const patchCache = (
+    id: string,
+    updater: (person: DirectoryPerson) => DirectoryPerson | null,
+  ) => {
+    queryClient.setQueriesData<PeoplePage>({ queryKey: ["people"] }, (old) => {
+      if (!old) return old;
+      let removed = 0;
+      const next: DirectoryPerson[] = [];
+      for (const person of old.people) {
+        if (person.id !== id) {
+          next.push(person);
+          continue;
+        }
+        const result = updater(person);
+        if (result) next.push(result);
+        else removed += 1;
+      }
+      return { people: next, total: Math.max(0, old.total - removed) };
+    });
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      await deletePerson(pendingDelete.id, pendingDelete.image_url);
+      patchCache(pendingDelete.id, () => null);
+      setPendingDelete(null);
+      void queryClient.invalidateQueries({ queryKey: ["people"] });
+    } catch (e) {
+      setDeleteError(
+        e instanceof Error ? e.message : "Could not delete that profile.",
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const resetPaging = () => setLimit(PAGE_SIZE);
 
@@ -75,6 +135,7 @@ function Directory() {
       prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id],
     );
   };
+
 
   return (
     <div className="min-h-screen bg-silver font-sans text-ink antialiased">
@@ -306,7 +367,27 @@ function Directory() {
                         ))}
                       </div>
                     )}
+                    <div className="mt-4 flex items-center gap-2 border-t border-ink/5 pt-3">
+                      <button
+                        type="button"
+                        onClick={() => setEditing(person)}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-card px-2.5 py-1 text-xs font-medium text-ink ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5"
+                      >
+                        <Pencil className="size-3.5" /> Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDeleteError(null);
+                          setPendingDelete(person);
+                        }}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-card px-2.5 py-1 text-xs font-medium text-destructive ring-1 ring-destructive/20 transition-transform hover:-translate-y-0.5"
+                      >
+                        <Trash2 className="size-3.5" /> Delete
+                      </button>
+                    </div>
                   </div>
+
                 </article>
               ))}
             </div>
@@ -327,6 +408,56 @@ function Directory() {
           )}
         </div>
       </div>
+
+      {editing && (
+        <EditPersonDialog
+          person={editing}
+          onClose={() => setEditing(null)}
+          onSaved={(updated) => patchCache(updated.id, () => updated)}
+        />
+      )}
+
+      {pendingDelete && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-ink/40 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Delete ${pendingDelete.name}`}
+        >
+          <div className="w-full max-w-sm rounded-[min(1.4vw,16px)] bg-silver p-5 ring-1 ring-ink/10">
+            <h2 className="font-display text-lg font-semibold tracking-tight">
+              Delete {pendingDelete.name}?
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              This removes the profile and its photo for good, along with its tag
+              links. This can't be undone.
+            </p>
+            {deleteError && (
+              <p className="mt-3 text-sm text-destructive">{deleteError}</p>
+            )}
+            <div className="mt-5 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setPendingDelete(null)}
+                disabled={isDeleting}
+                className="text-sm text-muted-foreground hover:text-ink disabled:opacity-60"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => void confirmDelete()}
+                disabled={isDeleting}
+                className="inline-flex items-center gap-2 rounded-[min(1vw,10px)] bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-transform hover:-translate-y-0.5 disabled:opacity-60"
+              >
+                {isDeleting && <Loader2 className="size-4 animate-spin" />}
+                {isDeleting ? "Deleting…" : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
+
   );
 }

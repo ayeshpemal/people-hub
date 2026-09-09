@@ -15,9 +15,12 @@ export interface DirectoryPerson {
   name: string;
   description: string | null;
   image_url: string | null;
+  category_id: string | null;
   category: string | null;
   tags: string[];
+  tagIds: string[];
 }
+
 
 export interface PeoplePage {
   people: DirectoryPerson[];
@@ -72,9 +75,10 @@ export async function fetchPeople({
 
   let query = supabase
     .from("people")
-    .select("id, name, description, image_url, categories(name), person_tags(tags(name))", {
-      count: "exact",
-    })
+    .select(
+      "id, name, description, image_url, category_id, categories(name), person_tags(tag_id, tags(name))",
+      { count: "exact" },
+    )
     .order("name")
     .range(0, limit - 1);
 
@@ -88,6 +92,7 @@ export async function fetchPeople({
   const people: DirectoryPerson[] = (data ?? []).map((row) => {
     const categoryJoin = row.categories as unknown as { name: string } | null;
     const tagJoins = (row.person_tags ?? []) as unknown as Array<{
+      tag_id: string;
       tags: { name: string } | null;
     }>;
     return {
@@ -95,13 +100,16 @@ export async function fetchPeople({
       name: row.name,
       description: row.description,
       image_url: row.image_url,
+      category_id: row.category_id ?? null,
       category: categoryJoin?.name ?? null,
       tags: tagJoins
         .map((pt) => pt.tags?.name)
         .filter((name): name is string => Boolean(name))
         .sort(),
+      tagIds: tagJoins.map((pt) => pt.tag_id),
     };
   });
+
 
   return { people, total: count ?? 0 };
 }
