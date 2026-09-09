@@ -1,8 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { AlertTriangle, ChevronDown, Plus, Search, Settings2, Users } from "lucide-react";
+import {
+  AlertTriangle,
+  ChevronDown,
+  Loader2,
+  Pencil,
+  Plus,
+  Search,
+  Settings2,
+  Trash2,
+  Users,
+} from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { EditPersonDialog } from "@/components/edit-person-dialog";
+import { deletePerson } from "@/lib/person-mutations";
 
 
 import {
@@ -10,7 +22,10 @@ import {
   fetchPeople,
   fetchTags,
   PAGE_SIZE,
+  type DirectoryPerson,
+  type PeoplePage,
 } from "@/lib/directory";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
