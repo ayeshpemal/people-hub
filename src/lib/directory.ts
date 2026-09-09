@@ -15,9 +15,12 @@ export interface DirectoryPerson {
   name: string;
   description: string | null;
   image_url: string | null;
+  category_id: string | null;
   category: string | null;
   tags: string[];
+  tagIds: string[];
 }
+
 
 export interface PeoplePage {
   people: DirectoryPerson[];
