@@ -61,15 +61,24 @@ export async function fetchPeople({
   limit,
 }: FetchPeopleOptions): Promise<PeoplePage> {
   // Resolve tag filtering to a set of person ids first so we can keep the
-  // main query simple and index-friendly.
+  // main query simple and index-friendly. AND logic: a person must carry
+  // EVERY selected tag, so we count distinct matches per person.
   let tagPersonIds: string[] | null = null;
   if (tagIds.length > 0) {
     const { data, error } = await supabase
       .from("person_tags")
-      .select("person_id")
+      .select("person_id, tag_id")
       .in("tag_id", tagIds);
     if (error) throw error;
-    tagPersonIds = [...new Set((data ?? []).map((row) => row.person_id))];
+    const matches = new Map<string, Set<string>>();
+    for (const row of data ?? []) {
+      const set = matches.get(row.person_id) ?? new Set<string>();
+      set.add(row.tag_id);
+      matches.set(row.person_id, set);
+    }
+    tagPersonIds = [...matches.entries()]
+      .filter(([, set]) => set.size === new Set(tagIds).size)
+      .map(([personId]) => personId);
     if (tagPersonIds.length === 0) return { people: [], total: 0 };
   }
 
@@ -83,7 +92,9 @@ export async function fetchPeople({
     .range(0, limit - 1);
 
   if (categoryId) query = query.eq("category_id", categoryId);
-  if (search.trim()) query = query.ilike("name", `%${search.trim()}%`);
+  const term = search.trim().replace(/[,()]/g, " ").trim();
+  // Match the saved name OR the context/notes, still filtered in the database.
+  if (term) query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
   if (tagPersonIds) query = query.in("id", tagPersonIds);
 
   const { data, error, count } = await query;

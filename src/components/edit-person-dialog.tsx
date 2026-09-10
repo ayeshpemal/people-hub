@@ -12,7 +12,7 @@ import { updatePerson } from "@/lib/person-mutations";
 import { findOrCreateTaxonomyItem, type TaxonomyKind } from "@/lib/taxonomy";
 
 const field =
-  "w-full rounded-[min(1vw,10px)] bg-card px-3 py-2.5 text-sm text-ink outline-none ring-1 ring-ink/5 placeholder:text-muted-foreground focus:ring-2 focus:ring-brand/40";
+  "w-full rounded-[min(1vw,10px)] bg-card px-3 py-2.5 text-sm text-ink outline-none ring-1 ring-ink/10 placeholder:text-muted-foreground focus:ring-2 focus:ring-brand/40";
 const labelCls =
   "text-[11px] font-semibold uppercase tracking-widest text-muted-foreground";
 
@@ -118,7 +118,7 @@ export function EditPersonDialog({ person, onClose, onSaved }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink/40 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label={`Edit ${person.name}`}
@@ -135,7 +135,7 @@ export function EditPersonDialog({ person, onClose, onSaved }: Props) {
             type="button"
             aria-label="Close"
             onClick={onClose}
-            className="rounded-full bg-card p-1.5 text-muted-foreground ring-1 ring-ink/5"
+            className="rounded-full bg-card p-1.5 text-muted-foreground ring-1 ring-ink/10"
           >
             <X className="size-4" />
           </button>
@@ -217,7 +217,7 @@ export function EditPersonDialog({ person, onClose, onSaved }: Props) {
                   alt={`Photo of ${person.name}`}
                   width={80}
                   height={80}
-                  className="size-20 shrink-0 rounded-[min(1.4vw,16px)] object-cover ring-1 ring-ink/5"
+                  className="size-20 shrink-0 rounded-[min(1.4vw,16px)] object-cover ring-1 ring-ink/10"
                 />
               ) : (
                 <div className="grid size-20 shrink-0 place-items-center rounded-[min(1.4vw,16px)] bg-gradient-to-br from-lilac to-brand/30">

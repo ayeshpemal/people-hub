@@ -13,6 +13,7 @@ import {
   Users,
 } from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { FilterSelect } from "@/components/filter-select";
 import { EditPersonDialog } from "@/components/edit-person-dialog";
 import { deletePerson } from "@/lib/person-mutations";
 
@@ -30,17 +31,17 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Flock — People Directory" },
+      { title: "Person Cache — Save people you find online" },
       {
         name: "description",
         content:
-          "A fast, clean index of the Flock community. Filter by category, search tags, and browse the roster.",
+          "Your personal cache of people found online. Save a photo, context and tags, then search or filter to find them again fast.",
       },
-      { property: "og:title", content: "Flock — People Directory" },
+      { property: "og:title", content: "Person Cache — Save people you find online" },
       {
         property: "og:description",
         content:
-          "A fast, clean index of the Flock community. Filter by category, search tags, and browse the roster.",
+          "Your personal cache of people found online. Save a photo, context and tags, then search or filter to find them again fast.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -129,40 +130,36 @@ function Directory() {
 
   const resetPaging = () => setLimit(PAGE_SIZE);
 
-  const toggleTag = (id: string) => {
-    resetPaging();
-    setSelectedTagIds((prev) =>
-      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id],
-    );
-  };
+  const hasFilters =
+    Boolean(categoryId) || selectedTagIds.length > 0 || search.trim().length > 0;
 
 
   return (
     <div className="min-h-screen bg-silver font-sans text-ink antialiased">
       {/* App bar */}
-      <div className="sticky top-0 z-20 bg-silver/85 backdrop-blur-sm ring-1 ring-ink/5">
+      <div className="sticky top-0 z-20 bg-silver/85 backdrop-blur-sm ring-1 ring-ink/10">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2">
             <div className="grid size-8 shrink-0 place-items-center rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink font-display text-sm font-semibold text-ink-foreground shadow-inner">
-              F
+              PC
             </div>
             <span className="font-display text-lg font-semibold tracking-tight">
-              Flock
+              Person Cache
             </span>
-            <span className="mt-0.5 rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-brand">
-              Directory
+            <span className="mt-0.5 hidden rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-brand sm:inline">
+              Saved people
             </span>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <div className="hidden items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 ring-1 ring-ink/5 sm:flex">
+            <div className="hidden items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 ring-1 ring-ink/10 sm:flex">
               <Users className="size-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
-                {total} people
+                {total} saved
               </span>
             </div>
             <Link
               to="/manage-data"
-              className="hidden items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 text-sm font-medium text-ink ring-1 ring-ink/5 transition-transform hover:-translate-y-0.5 sm:inline-flex"
+              className="hidden items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 text-sm font-medium text-ink ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5 sm:inline-flex"
             >
               <Settings2 className="size-4 shrink-0" />
               Manage data
@@ -172,7 +169,7 @@ function Directory() {
               className="inline-flex items-center gap-1.5 rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink px-3 py-2 text-sm font-medium text-ink-foreground shadow-inner ring-1 ring-brand/40 transition-transform hover:-translate-y-0.5"
             >
               <Plus className="size-4 shrink-0" />
-              Add person
+              Save someone
             </Link>
           </div>
         </div>
@@ -183,15 +180,15 @@ function Directory() {
       <div className="bg-silver">
         <div className="mx-auto max-w-6xl px-4 pt-8 pb-5 sm:px-6">
           <h1 className="font-display text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-            Find your people
+            Your saved people
           </h1>
-          <p className="mt-2 max-w-[48ch] text-pretty text-base text-muted-foreground">
-            A fast, clean index of the Flock community. Filter by category,
-            search tags, and browse the roster.
+          <p className="mt-2 max-w-[52ch] text-pretty text-base text-muted-foreground">
+            A personal cache of people you found online. Search by name or the
+            context you jotted down, then narrow it with a category and tags.
           </p>
 
           {/* Search */}
-          <label className="mt-5 flex items-center gap-2 rounded-[min(1vw,10px)] bg-card px-3 py-2.5 ring-1 ring-ink/5 focus-within:ring-2 focus-within:ring-brand/40">
+          <label className="mt-5 flex items-center gap-2 rounded-[min(1vw,10px)] bg-card px-3 py-2.5 ring-1 ring-ink/10 focus-within:ring-2 focus-within:ring-brand/40">
             <Search className="size-4 shrink-0 text-muted-foreground" />
             <input
               type="search"
@@ -200,67 +197,72 @@ function Directory() {
                 resetPaging();
                 setSearch(e.target.value);
               }}
-              placeholder="Search by name…"
+              placeholder="Search by name or context…"
               className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-muted-foreground"
             />
           </label>
         </div>
       </div>
 
-      {/* Sticky filter bar */}
+      {/* Combined filter bar — search + one category + many tags, all AND-ed */}
       <div className="sticky top-[57px] z-10 bg-silver/95 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="flex flex-wrap items-center gap-2 border-b border-ink/5 pb-3">
-            <label
-              htmlFor="category-filter"
-              className="mr-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
-            >
-              Category
-            </label>
-            <div className="relative">
-              <select
+          <div className="grid gap-3 border-b border-ink/10 pb-4 sm:grid-cols-2">
+            <div>
+              <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                Category
+              </span>
+              <FilterSelect
                 id="category-filter"
-                value={categoryId ?? ""}
-                onChange={(e) => {
+                label="Filter by category"
+                options={categories}
+                value={categoryId ? [categoryId] : []}
+                onChange={(ids) => {
                   resetPaging();
-                  setCategoryId(e.target.value || null);
+                  setCategoryId(ids[0] ?? null);
                 }}
-                className="appearance-none rounded-full bg-card py-1.5 pr-8 pl-3 text-xs font-medium text-ink ring-1 ring-ink/5 outline-none focus:ring-2 focus:ring-brand/40"
-              >
-                <option value="">All categories</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+                placeholder="All categories"
+                searchPlaceholder="Search categories…"
+              />
+            </div>
+            <div>
+              <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                Tags (must match all)
+              </span>
+              <FilterSelect
+                id="tag-filter"
+                label="Filter by tags"
+                multi
+                options={tags}
+                value={selectedTagIds}
+                onChange={(ids) => {
+                  resetPaging();
+                  setSelectedTagIds(ids);
+                }}
+                placeholder="Any tag"
+                searchPlaceholder="Search tags…"
+              />
             </div>
           </div>
-
-          <div className="flex flex-wrap items-center gap-2 pb-3 pt-2.5">
-            <span className="mr-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-              Tags
-            </span>
-            {tags.map((tag) => {
-              const active = selectedTagIds.includes(tag.id);
-              return (
-                <button
-                  key={tag.id}
-                  onClick={() => toggleTag(tag.id)}
-                  className={
-                    active
-                      ? "rounded-full bg-brand/10 px-2.5 py-1 text-xs font-medium text-brand ring-1 ring-brand/20 transition-transform hover:-translate-y-0.5"
-                      : "rounded-full bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground ring-1 ring-ink/5 transition-transform hover:-translate-y-0.5"
-                  }
-                >
-                  {tag.name}
-                </button>
-              );
-            })}
-          </div>
+          {(categoryId || selectedTagIds.length > 0 || search) && (
+            <div className="flex justify-end py-2">
+              <button
+                type="button"
+                onClick={() => {
+                  resetPaging();
+                  setCategoryId(null);
+                  setSelectedTagIds([]);
+                  setSearch("");
+                }}
+                className="text-xs font-medium text-muted-foreground hover:text-ink"
+              >
+                Clear filters
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
 
       {/* Grid */}
       <div className="bg-silver">
@@ -281,7 +283,7 @@ function Directory() {
               {Array.from({ length: 6 }).map((_, index) => (
                 <div
                   key={index}
-                  className="overflow-hidden rounded-[min(1.4vw,16px)] bg-card ring-1 ring-ink/5"
+                  className="overflow-hidden rounded-[min(1.4vw,16px)] bg-card ring-1 ring-ink/10"
                 >
                   <div className="aspect-square w-full animate-pulse bg-silver" />
                   <div className="flex flex-col gap-2 p-4">
@@ -293,7 +295,7 @@ function Directory() {
               ))}
             </div>
           ) : isError ? (
-            <div className="flex flex-col items-center gap-3 rounded-[min(1.4vw,16px)] bg-card py-16 ring-1 ring-ink/5">
+            <div className="flex flex-col items-center gap-3 rounded-[min(1.4vw,16px)] bg-card py-16 ring-1 ring-ink/10">
               <AlertTriangle className="size-6 text-destructive" />
               <p className="text-sm text-muted-foreground">
                 {error instanceof Error
@@ -302,16 +304,18 @@ function Directory() {
               </p>
               <button
                 onClick={() => refetch()}
-                className="rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-ink-foreground transition-transform hover:-translate-y-0.5"
+                className="rounded-full bg-brand px-3 py-1.5 text-xs font-medium text-ink-foreground transition-transform hover:-translate-y-0.5"
               >
                 Try again
               </button>
             </div>
           ) : people.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 rounded-[min(1.4vw,16px)] bg-card py-16 ring-1 ring-ink/5">
+            <div className="flex flex-col items-center gap-2 rounded-[min(1.4vw,16px)] bg-card py-16 ring-1 ring-ink/10">
               <Search className="size-6 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
-                No people match these filters yet.
+                {hasFilters
+                  ? "No one matches these filters yet."
+                  : "No one saved yet. Add someone you found online to get started."}
               </p>
             </div>
           ) : (
@@ -320,7 +324,7 @@ function Directory() {
               {people.map((person, index) => (
                 <article
                   key={person.id}
-                  className="card-in group flex flex-col overflow-hidden rounded-[min(1.4vw,16px)] bg-card ring-1 ring-ink/5 transition-transform duration-200 hover:-translate-y-1"
+                  className="card-in group flex flex-col overflow-hidden rounded-[min(1.4vw,16px)] bg-card ring-1 ring-ink/10 transition-transform duration-200 hover:-translate-y-1"
                   style={{ animationDelay: `${Math.min(index, 12) * 40}ms` }}
                 >
                   {person.image_url ? (
@@ -419,7 +423,7 @@ function Directory() {
 
       {pendingDelete && (
         <div
-          className="fixed inset-0 z-50 grid place-items-center bg-ink/40 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           aria-label={`Delete ${pendingDelete.name}`}

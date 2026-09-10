@@ -101,7 +101,7 @@ export function CreatableSelect({
   return (
     <div ref={boxRef} className="relative">
       <div
-        className="flex min-h-[42px] w-full flex-wrap items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-2 py-1.5 text-sm ring-1 ring-ink/5 focus-within:ring-2 focus-within:ring-brand/40"
+        className="flex min-h-[42px] w-full flex-wrap items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-2 py-1.5 text-sm ring-1 ring-ink/10 focus-within:ring-2 focus-within:ring-brand/40"
         onClick={() => setOpen(true)}
       >
         {selected.map((item) => (
@@ -166,7 +166,7 @@ export function CreatableSelect({
               type="button"
               key={item.id}
               onClick={() => pick(item.id)}
-              className="flex w-full items-center gap-2 rounded-[min(0.8vw,8px)] px-2 py-2 text-left text-sm text-ink hover:bg-ink/5"
+              className="flex w-full items-center gap-2 rounded-[min(0.8vw,8px)] px-2 py-2 text-left text-sm text-ink hover:bg-ink/10"
             >
               <Check
                 className={

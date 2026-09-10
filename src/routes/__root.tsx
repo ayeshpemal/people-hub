@@ -77,18 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Flock — People Directory" },
+      { title: "Person Cache — Save people you find online" },
       {
         name: "description",
         content:
-          "A fast, clean index of the Flock community. Filter by category, search tags, and browse the roster.",
+          "Your personal cache of people found online. Save a photo, context and tags, then search or filter to find them again fast.",
       },
-      { name: "author", content: "Flock" },
-      { property: "og:title", content: "Flock — People Directory" },
+      { name: "author", content: "Person Cache" },
+      { property: "og:title", content: "Person Cache — Save people you find online" },
       {
         property: "og:description",
         content:
-          "A fast, clean index of the Flock community. Filter by category, search tags, and browse the roster.",
+          "Your personal cache of people found online. Save a photo, context and tags, then search or filter to find them again fast.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
