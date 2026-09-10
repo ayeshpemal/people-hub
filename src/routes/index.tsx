@@ -172,7 +172,7 @@ function Directory() {
               className="inline-flex items-center gap-1.5 rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink px-3 py-2 text-sm font-medium text-ink-foreground shadow-inner ring-1 ring-brand/40 transition-transform hover:-translate-y-0.5"
             >
               <Plus className="size-4 shrink-0" />
-              Add person
+              Save someone
             </Link>
           </div>
         </div>
