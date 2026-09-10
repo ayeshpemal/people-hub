@@ -30,17 +30,17 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Flock — People Directory" },
+      { title: "Person Cache — Save people you find online" },
       {
         name: "description",
         content:
-          "A fast, clean index of the Flock community. Filter by category, search tags, and browse the roster.",
+          "Your personal cache of people found online. Save a photo, context and tags, then search or filter to find them again fast.",
       },
-      { property: "og:title", content: "Flock — People Directory" },
+      { property: "og:title", content: "Person Cache — Save people you find online" },
       {
         property: "og:description",
         content:
-          "A fast, clean index of the Flock community. Filter by category, search tags, and browse the roster.",
+          "Your personal cache of people found online. Save a photo, context and tags, then search or filter to find them again fast.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
