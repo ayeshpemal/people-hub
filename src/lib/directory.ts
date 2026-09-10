@@ -92,7 +92,9 @@ export async function fetchPeople({
     .range(0, limit - 1);
 
   if (categoryId) query = query.eq("category_id", categoryId);
-  if (search.trim()) query = query.ilike("name", `%${search.trim()}%`);
+  const term = search.trim().replace(/[,()]/g, " ").trim();
+  // Match the saved name OR the context/notes, still filtered in the database.
+  if (term) query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
   if (tagPersonIds) query = query.in("id", tagPersonIds);
 
   const { data, error, count } = await query;
