@@ -27,17 +27,17 @@ import {
 export const Route = createFileRoute("/manage-data")({
   head: () => ({
     meta: [
-      { title: "Manage Categories & Tags — Flock" },
+      { title: "Manage Categories & Tags — Person Cache" },
       {
         name: "description",
         content:
-          "Create, rename, and remove the categories and tags used across the Flock people directory.",
+          "Create, rename, and remove the categories and tags used across the Person Cache directory.",
       },
-      { property: "og:title", content: "Manage Categories & Tags — Flock" },
+      { property: "og:title", content: "Manage Categories & Tags — Person Cache" },
       {
         property: "og:description",
         content:
-          "Create, rename, and remove the categories and tags used across the Flock people directory.",
+          "Create, rename, and remove the categories and tags used across the Person Cache directory.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

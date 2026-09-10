@@ -14,17 +14,17 @@ import {
 export const Route = createFileRoute("/add-person")({
   head: () => ({
     meta: [
-      { title: "Add a person — Flock Directory" },
+      { title: "Add a person — Person Cache" },
       {
         name: "description",
         content:
-          "Add a new profile to the Flock directory: name, description, category, tags and a photo that is compressed in your browser before upload.",
+          "Add a new profile to the Person Cache: name, description, category, tags and a photo that is compressed in your browser before upload.",
       },
-      { property: "og:title", content: "Add a person — Flock Directory" },
+      { property: "og:title", content: "Add a person — Person Cache" },
       {
         property: "og:description",
         content:
-          "Add a new profile to the Flock directory with a photo that is optimised in your browser before upload.",
+          "Add a new profile to the Person Cache with a photo that is optimised in your browser before upload.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
