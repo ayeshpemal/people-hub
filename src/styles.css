@@ -76,7 +76,7 @@
   --lilac: oklch(0.62 0.12 293.6);
   --silver: oklch(0.17 0.018 286);
   --ink: oklch(0.965 0.006 286);
-  --ink-foreground: oklch(0.985 0.004 286);
+  --ink-foreground: oklch(0.17 0.02 286);
   --background: oklch(0.17 0.018 286);
   --foreground: oklch(0.965 0.006 286);
   --card: oklch(0.225 0.021 288);
