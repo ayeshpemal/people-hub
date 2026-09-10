@@ -129,12 +129,8 @@ function Directory() {
 
   const resetPaging = () => setLimit(PAGE_SIZE);
 
-  const toggleTag = (id: string) => {
-    resetPaging();
-    setSelectedTagIds((prev) =>
-      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id],
-    );
-  };
+  const hasFilters =
+    Boolean(categoryId) || selectedTagIds.length > 0 || search.trim().length > 0;
 
 
   return (
