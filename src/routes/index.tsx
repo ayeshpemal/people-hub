@@ -207,60 +207,65 @@ function Directory() {
         </div>
       </div>
 
-      {/* Sticky filter bar */}
+      {/* Combined filter bar — search + one category + many tags, all AND-ed */}
       <div className="sticky top-[57px] z-10 bg-silver/95 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="flex flex-wrap items-center gap-2 border-b border-ink/5 pb-3">
-            <label
-              htmlFor="category-filter"
-              className="mr-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground"
-            >
-              Category
-            </label>
-            <div className="relative">
-              <select
+          <div className="grid gap-3 border-b border-ink/10 pb-4 sm:grid-cols-2">
+            <div>
+              <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                Category
+              </span>
+              <FilterSelect
                 id="category-filter"
-                value={categoryId ?? ""}
-                onChange={(e) => {
+                label="Filter by category"
+                options={categories}
+                value={categoryId ? [categoryId] : []}
+                onChange={(ids) => {
                   resetPaging();
-                  setCategoryId(e.target.value || null);
+                  setCategoryId(ids[0] ?? null);
                 }}
-                className="appearance-none rounded-full bg-card py-1.5 pr-8 pl-3 text-xs font-medium text-ink ring-1 ring-ink/5 outline-none focus:ring-2 focus:ring-brand/40"
-              >
-                <option value="">All categories</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+                placeholder="All categories"
+                searchPlaceholder="Search categories…"
+              />
+            </div>
+            <div>
+              <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                Tags (must match all)
+              </span>
+              <FilterSelect
+                id="tag-filter"
+                label="Filter by tags"
+                multi
+                options={tags}
+                value={selectedTagIds}
+                onChange={(ids) => {
+                  resetPaging();
+                  setSelectedTagIds(ids);
+                }}
+                placeholder="Any tag"
+                searchPlaceholder="Search tags…"
+              />
             </div>
           </div>
-
-          <div className="flex flex-wrap items-center gap-2 pb-3 pt-2.5">
-            <span className="mr-1 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-              Tags
-            </span>
-            {tags.map((tag) => {
-              const active = selectedTagIds.includes(tag.id);
-              return (
-                <button
-                  key={tag.id}
-                  onClick={() => toggleTag(tag.id)}
-                  className={
-                    active
-                      ? "rounded-full bg-brand/10 px-2.5 py-1 text-xs font-medium text-brand ring-1 ring-brand/20 transition-transform hover:-translate-y-0.5"
-                      : "rounded-full bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground ring-1 ring-ink/5 transition-transform hover:-translate-y-0.5"
-                  }
-                >
-                  {tag.name}
-                </button>
-              );
-            })}
-          </div>
+          {(categoryId || selectedTagIds.length > 0 || search) && (
+            <div className="flex justify-end py-2">
+              <button
+                type="button"
+                onClick={() => {
+                  resetPaging();
+                  setCategoryId(null);
+                  setSelectedTagIds([]);
+                  setSearch("");
+                }}
+                className="text-xs font-medium text-muted-foreground hover:text-ink"
+              >
+                Clear filters
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
 
       {/* Grid */}
       <div className="bg-silver">
