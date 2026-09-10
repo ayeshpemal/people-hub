@@ -67,32 +67,35 @@
 }
 
 :root {
+  /* Person Cache — sleek dark utility theme. "ink" is now the light text
+     color and "silver" the deep page surface, so existing utilities flip
+     to dark mode without rewriting every component. */
   --radius: 0.625rem;
-  --brand: oklch(0.554 0.226 283.5);
-  --pink: oklch(0.681 0.227 341.5);
-  --lilac: oklch(0.735 0.133 293.6);
-  --silver: oklch(0.93 0.014 285);
-  --ink: oklch(0.245 0.045 299);
-  --ink-foreground: oklch(0.985 0.005 285);
-  --background: oklch(0.93 0.014 285);
-  --foreground: oklch(0.245 0.045 299);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.245 0.045 299);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.245 0.045 299);
-  --primary: oklch(0.554 0.226 283.5);
-  --primary-foreground: oklch(0.985 0.005 285);
-  --secondary: oklch(0.93 0.014 285);
-  --secondary-foreground: oklch(0.245 0.045 299);
-  --muted: oklch(0.93 0.014 285);
-  --muted-foreground: oklch(0.52 0.03 290);
-  --accent: oklch(0.93 0.014 285);
-  --accent-foreground: oklch(0.245 0.045 299);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0.005 285);
-  --border: oklch(0.245 0.045 299 / 6%);
-  --input: oklch(0.245 0.045 299 / 6%);
-  --ring: oklch(0.554 0.226 283.5);
+  --brand: oklch(0.68 0.17 285);
+  --pink: oklch(0.72 0.19 341.5);
+  --lilac: oklch(0.62 0.12 293.6);
+  --silver: oklch(0.17 0.018 286);
+  --ink: oklch(0.965 0.006 286);
+  --ink-foreground: oklch(0.985 0.004 286);
+  --background: oklch(0.17 0.018 286);
+  --foreground: oklch(0.965 0.006 286);
+  --card: oklch(0.225 0.021 288);
+  --card-foreground: oklch(0.965 0.006 286);
+  --popover: oklch(0.225 0.021 288);
+  --popover-foreground: oklch(0.965 0.006 286);
+  --primary: oklch(0.68 0.17 285);
+  --primary-foreground: oklch(0.16 0.02 286);
+  --secondary: oklch(0.27 0.022 288);
+  --secondary-foreground: oklch(0.965 0.006 286);
+  --muted: oklch(0.27 0.022 288);
+  --muted-foreground: oklch(0.7 0.022 288);
+  --accent: oklch(0.3 0.03 288);
+  --accent-foreground: oklch(0.965 0.006 286);
+  --destructive: oklch(0.65 0.2 22);
+  --destructive-foreground: oklch(0.985 0.004 286);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.68 0.17 285);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
