@@ -13,6 +13,7 @@ import {
   Users,
 } from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { FilterSelect } from "@/components/filter-select";
 import { EditPersonDialog } from "@/components/edit-person-dialog";
 import { deletePerson } from "@/lib/person-mutations";
 
