@@ -144,13 +144,13 @@ function Directory() {
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2">
             <div className="grid size-8 shrink-0 place-items-center rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink font-display text-sm font-semibold text-ink-foreground shadow-inner">
-              F
+              PC
             </div>
             <span className="font-display text-lg font-semibold tracking-tight">
-              Flock
+              Person Cache
             </span>
-            <span className="mt-0.5 rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-brand">
-              Directory
+            <span className="mt-0.5 hidden rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-brand sm:inline">
+              Saved people
             </span>
           </div>
           <div className="ml-auto flex items-center gap-2">
