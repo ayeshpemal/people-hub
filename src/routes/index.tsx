@@ -200,7 +200,7 @@ function Directory() {
                 resetPaging();
                 setSearch(e.target.value);
               }}
-              placeholder="Search by name…"
+              placeholder="Search by name or context…"
               className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-muted-foreground"
             />
           </label>
