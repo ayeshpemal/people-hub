@@ -137,7 +137,7 @@ function Directory() {
   return (
     <div className="min-h-screen bg-silver font-sans text-ink antialiased">
       {/* App bar */}
-      <div className="sticky top-0 z-20 bg-silver/85 backdrop-blur-sm ring-1 ring-ink/5">
+      <div className="sticky top-0 z-20 bg-silver/85 backdrop-blur-sm ring-1 ring-ink/10">
         <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2">
             <div className="grid size-8 shrink-0 place-items-center rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink font-display text-sm font-semibold text-ink-foreground shadow-inner">
@@ -151,7 +151,7 @@ function Directory() {
             </span>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <div className="hidden items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 ring-1 ring-ink/5 sm:flex">
+            <div className="hidden items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 ring-1 ring-ink/10 sm:flex">
               <Users className="size-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
                 {total} saved
@@ -159,7 +159,7 @@ function Directory() {
             </div>
             <Link
               to="/manage-data"
-              className="hidden items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 text-sm font-medium text-ink ring-1 ring-ink/5 transition-transform hover:-translate-y-0.5 sm:inline-flex"
+              className="hidden items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 text-sm font-medium text-ink ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5 sm:inline-flex"
             >
               <Settings2 className="size-4 shrink-0" />
               Manage data
@@ -188,7 +188,7 @@ function Directory() {
           </p>
 
           {/* Search */}
-          <label className="mt-5 flex items-center gap-2 rounded-[min(1vw,10px)] bg-card px-3 py-2.5 ring-1 ring-ink/5 focus-within:ring-2 focus-within:ring-brand/40">
+          <label className="mt-5 flex items-center gap-2 rounded-[min(1vw,10px)] bg-card px-3 py-2.5 ring-1 ring-ink/10 focus-within:ring-2 focus-within:ring-brand/40">
             <Search className="size-4 shrink-0 text-muted-foreground" />
             <input
               type="search"
@@ -283,7 +283,7 @@ function Directory() {
               {Array.from({ length: 6 }).map((_, index) => (
                 <div
                   key={index}
-                  className="overflow-hidden rounded-[min(1.4vw,16px)] bg-card ring-1 ring-ink/5"
+                  className="overflow-hidden rounded-[min(1.4vw,16px)] bg-card ring-1 ring-ink/10"
                 >
                   <div className="aspect-square w-full animate-pulse bg-silver" />
                   <div className="flex flex-col gap-2 p-4">
@@ -295,7 +295,7 @@ function Directory() {
               ))}
             </div>
           ) : isError ? (
-            <div className="flex flex-col items-center gap-3 rounded-[min(1.4vw,16px)] bg-card py-16 ring-1 ring-ink/5">
+            <div className="flex flex-col items-center gap-3 rounded-[min(1.4vw,16px)] bg-card py-16 ring-1 ring-ink/10">
               <AlertTriangle className="size-6 text-destructive" />
               <p className="text-sm text-muted-foreground">
                 {error instanceof Error
@@ -324,7 +324,7 @@ function Directory() {
               {people.map((person, index) => (
                 <article
                   key={person.id}
-                  className="card-in group flex flex-col overflow-hidden rounded-[min(1.4vw,16px)] bg-card ring-1 ring-ink/5 transition-transform duration-200 hover:-translate-y-1"
+                  className="card-in group flex flex-col overflow-hidden rounded-[min(1.4vw,16px)] bg-card ring-1 ring-ink/10 transition-transform duration-200 hover:-translate-y-1"
                   style={{ animationDelay: `${Math.min(index, 12) * 40}ms` }}
                 >
                   {person.image_url ? (
@@ -423,7 +423,7 @@ function Directory() {
 
       {pendingDelete && (
         <div
-          className="fixed inset-0 z-50 grid place-items-center bg-ink/40 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           aria-label={`Delete ${pendingDelete.name}`}

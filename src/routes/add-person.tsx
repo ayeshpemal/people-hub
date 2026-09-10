@@ -34,7 +34,7 @@ export const Route = createFileRoute("/add-person")({
 });
 
 const field =
-  "w-full rounded-[min(1vw,10px)] bg-card px-3 py-2.5 text-sm text-ink outline-none ring-1 ring-ink/5 placeholder:text-muted-foreground focus:ring-2 focus:ring-brand/40";
+  "w-full rounded-[min(1vw,10px)] bg-card px-3 py-2.5 text-sm text-ink outline-none ring-1 ring-ink/10 placeholder:text-muted-foreground focus:ring-2 focus:ring-brand/40";
 const labelCls =
   "text-[11px] font-semibold uppercase tracking-widest text-muted-foreground";
 
@@ -112,11 +112,11 @@ function AddPerson() {
 
   return (
     <div className="min-h-screen bg-silver font-sans text-ink antialiased">
-      <div className="sticky top-0 z-20 bg-silver/85 backdrop-blur-sm ring-1 ring-ink/5">
+      <div className="sticky top-0 z-20 bg-silver/85 backdrop-blur-sm ring-1 ring-ink/10">
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3 sm:px-6">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground ring-1 ring-ink/5 transition-transform hover:-translate-y-0.5"
+            className="inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5"
           >
             <ArrowLeft className="size-3.5" /> Directory
           </Link>
@@ -214,7 +214,7 @@ function AddPerson() {
                   alt="Preview of the selected photo"
                   width={80}
                   height={80}
-                  className="size-20 shrink-0 rounded-[min(1.4vw,16px)] object-cover ring-1 ring-ink/5"
+                  className="size-20 shrink-0 rounded-[min(1.4vw,16px)] object-cover ring-1 ring-ink/10"
                 />
               ) : (
                 <div className="grid size-20 shrink-0 place-items-center rounded-[min(1.4vw,16px)] bg-gradient-to-br from-lilac to-brand/30">

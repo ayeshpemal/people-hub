@@ -53,7 +53,7 @@ function ManageData() {
         <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-3 sm:px-6">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 text-sm font-medium text-ink ring-1 ring-ink/5 transition-transform hover:-translate-y-0.5"
+            className="inline-flex items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 text-sm font-medium text-ink ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5"
           >
             <ArrowLeft className="size-4" />
             Directory
@@ -227,7 +227,7 @@ function TaxonomyPanel({ kind, title, blurb, deleteWarning }: PanelProps) {
   };
 
   return (
-    <section className="flex flex-col rounded-[min(1.4vw,16px)] bg-card p-5 ring-1 ring-ink/5">
+    <section className="flex flex-col rounded-[min(1.4vw,16px)] bg-card p-5 ring-1 ring-ink/10">
       <h2 className="font-display text-lg font-semibold text-ink">{title}</h2>
       <p className="mt-1 text-sm text-muted-foreground">{blurb}</p>
 
@@ -241,7 +241,7 @@ function TaxonomyPanel({ kind, title, blurb, deleteWarning }: PanelProps) {
           }}
           placeholder={`New ${kind === "categories" ? "category" : "tag"} name`}
           aria-label={`New ${kind === "categories" ? "category" : "tag"} name`}
-          className="w-full rounded-[min(1vw,10px)] bg-silver px-3 py-2 text-sm text-ink ring-1 ring-ink/5 outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-brand/40"
+          className="w-full rounded-[min(1vw,10px)] bg-silver px-3 py-2 text-sm text-ink ring-1 ring-ink/10 outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-brand/40"
         />
         <button
           type="submit"
@@ -308,7 +308,7 @@ function TaxonomyPanel({ kind, title, blurb, deleteWarning }: PanelProps) {
                         if (event.key === "Enter") submitRename(item);
                         if (event.key === "Escape") setEditingId(null);
                       }}
-                      className="w-full rounded-[min(1vw,10px)] bg-silver px-2.5 py-1.5 text-sm text-ink ring-1 ring-ink/5 outline-none focus:ring-2 focus:ring-brand/40"
+                      className="w-full rounded-[min(1vw,10px)] bg-silver px-2.5 py-1.5 text-sm text-ink ring-1 ring-ink/10 outline-none focus:ring-2 focus:ring-brand/40"
                     />
                     <button
                       onClick={() => submitRename(item)}
@@ -320,7 +320,7 @@ function TaxonomyPanel({ kind, title, blurb, deleteWarning }: PanelProps) {
                     <button
                       onClick={() => setEditingId(null)}
                       aria-label="Cancel"
-                      className="rounded-full p-1.5 text-muted-foreground hover:bg-ink/5"
+                      className="rounded-full p-1.5 text-muted-foreground hover:bg-ink/10"
                     >
                       <X className="size-4" />
                     </button>
@@ -344,7 +344,7 @@ function TaxonomyPanel({ kind, title, blurb, deleteWarning }: PanelProps) {
                       }}
                       disabled={saving}
                       aria-label={`Rename ${item.name}`}
-                      className="rounded-full p-1.5 text-muted-foreground hover:bg-ink/5 hover:text-ink disabled:opacity-40"
+                      className="rounded-full p-1.5 text-muted-foreground hover:bg-ink/10 hover:text-ink disabled:opacity-40"
                     >
                       <Pencil className="size-4" />
                     </button>
@@ -365,7 +365,7 @@ function TaxonomyPanel({ kind, title, blurb, deleteWarning }: PanelProps) {
       </div>
 
       {pendingDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-sm rounded-[min(1.4vw,16px)] bg-card p-5 ring-1 ring-ink/10">
             <h3 className="font-display text-base font-semibold text-ink">
               Are you sure?
@@ -379,7 +379,7 @@ function TaxonomyPanel({ kind, title, blurb, deleteWarning }: PanelProps) {
             <div className="mt-5 flex justify-end gap-2">
               <button
                 onClick={() => setPendingDelete(null)}
-                className="rounded-[min(1vw,10px)] bg-silver px-3 py-2 text-sm font-medium text-ink ring-1 ring-ink/5"
+                className="rounded-[min(1vw,10px)] bg-silver px-3 py-2 text-sm font-medium text-ink ring-1 ring-ink/10"
               >
                 Keep it
               </button>
