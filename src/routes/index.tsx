@@ -17,7 +17,6 @@ import { FilterSelect } from "@/components/filter-select";
 import { EditPersonDialog } from "@/components/edit-person-dialog";
 import { deletePerson } from "@/lib/person-mutations";
 
-
 import {
   fetchCategories,
   fetchPeople,
@@ -26,7 +25,6 @@ import {
   type DirectoryPerson,
   type PeoplePage,
 } from "@/lib/directory";
-
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -89,10 +87,7 @@ function Directory() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   /** Patch every cached page so the grid updates without a refetch. */
-  const patchCache = (
-    id: string,
-    updater: (person: DirectoryPerson) => DirectoryPerson | null,
-  ) => {
+  const patchCache = (id: string, updater: (person: DirectoryPerson) => DirectoryPerson | null) => {
     queryClient.setQueriesData<PeoplePage>({ queryKey: ["people"] }, (old) => {
       if (!old) return old;
       let removed = 0;
@@ -120,9 +115,7 @@ function Directory() {
       setPendingDelete(null);
       void queryClient.invalidateQueries({ queryKey: ["people"] });
     } catch (e) {
-      setDeleteError(
-        e instanceof Error ? e.message : "Could not delete that profile.",
-      );
+      setDeleteError(e instanceof Error ? e.message : "Could not delete that profile.");
     } finally {
       setIsDeleting(false);
     }
@@ -130,9 +123,7 @@ function Directory() {
 
   const resetPaging = () => setLimit(PAGE_SIZE);
 
-  const hasFilters =
-    Boolean(categoryId) || selectedTagIds.length > 0 || search.trim().length > 0;
-
+  const hasFilters = Boolean(categoryId) || selectedTagIds.length > 0 || search.trim().length > 0;
 
   return (
     <div className="min-h-screen bg-silver font-sans text-ink antialiased">
@@ -143,38 +134,35 @@ function Directory() {
             <div className="grid size-8 shrink-0 place-items-center rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink font-display text-sm font-semibold text-ink-foreground shadow-inner">
               PC
             </div>
-            <span className="font-display text-lg font-semibold tracking-tight">
-              Person Cache
-            </span>
+            <span className="font-display text-lg font-semibold tracking-tight">Person Cache</span>
             <span className="mt-0.5 hidden rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-brand sm:inline">
               Saved people
             </span>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <div className="hidden items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 ring-1 ring-ink/10 sm:flex">
+            <div className="items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 ring-1 ring-ink/10 flex">
               <Users className="size-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
-                {total} saved
+                {total} <span className="hidden md:inline">saved</span>
               </span>
             </div>
             <Link
               to="/manage-data"
-              className="hidden items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 text-sm font-medium text-ink ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5 sm:inline-flex"
+              className="items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 text-sm font-medium text-ink ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5 sm:inline-flex"
             >
               <Settings2 className="size-4 shrink-0" />
-              Manage data
+              <span className="hidden md:inline">Manage data</span>
             </Link>
             <Link
               to="/add-person"
               className="inline-flex items-center gap-1.5 rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink px-3 py-2 text-sm font-medium text-ink-foreground shadow-inner ring-1 ring-brand/40 transition-transform hover:-translate-y-0.5"
             >
               <Plus className="size-4 shrink-0" />
-              Save someone
+              <span className="hidden md:inline">Save someone</span>
             </Link>
           </div>
         </div>
       </div>
-
 
       {/* Header */}
       <div className="bg-silver">
@@ -183,8 +171,8 @@ function Directory() {
             Your saved people
           </h1>
           <p className="mt-2 max-w-[52ch] text-pretty text-base text-muted-foreground">
-            A personal cache of people you found online. Search by name or the
-            context you jotted down, then narrow it with a category and tags.
+            A personal cache of people you found online. Search by name or the context you jotted
+            down, then narrow it with a category and tags.
           </p>
 
           {/* Search */}
@@ -263,19 +251,14 @@ function Directory() {
         </div>
       </div>
 
-
       {/* Grid */}
       <div className="bg-silver">
         <div className="mx-auto max-w-6xl px-4 pb-6 sm:px-6">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-sm text-muted-foreground">
-              Showing{" "}
-              <span className="font-medium text-ink">{people.length}</span> of{" "}
-              {total}
+              Showing <span className="font-medium text-ink">{people.length}</span> of {total}
             </span>
-            <span className="text-xs text-muted-foreground">
-              Sorted by name
-            </span>
+            <span className="text-xs text-muted-foreground">Sorted by name</span>
           </div>
 
           {isPending ? (
@@ -298,9 +281,7 @@ function Directory() {
             <div className="flex flex-col items-center gap-3 rounded-[min(1.4vw,16px)] bg-card py-16 ring-1 ring-ink/10">
               <AlertTriangle className="size-6 text-destructive" />
               <p className="text-sm text-muted-foreground">
-                {error instanceof Error
-                  ? error.message
-                  : "We couldn't load the directory."}
+                {error instanceof Error ? error.message : "We couldn't load the directory."}
               </p>
               <button
                 onClick={() => refetch()}
@@ -319,7 +300,6 @@ function Directory() {
               </p>
             </div>
           ) : (
-
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {people.map((person, index) => (
                 <article
@@ -391,7 +371,6 @@ function Directory() {
                       </button>
                     </div>
                   </div>
-
                 </article>
               ))}
             </div>
@@ -433,12 +412,10 @@ function Directory() {
               Delete {pendingDelete.name}?
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              This removes the profile and its photo for good, along with its tag
-              links. This can't be undone.
+              This removes the profile and its photo for good, along with its tag links. This can't
+              be undone.
             </p>
-            {deleteError && (
-              <p className="mt-3 text-sm text-destructive">{deleteError}</p>
-            )}
+            {deleteError && <p className="mt-3 text-sm text-destructive">{deleteError}</p>}
             <div className="mt-5 flex items-center justify-end gap-3">
               <button
                 type="button"
@@ -462,6 +439,5 @@ function Directory() {
         </div>
       )}
     </div>
-
   );
 }
