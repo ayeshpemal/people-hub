@@ -307,16 +307,18 @@ function Directory() {
               </p>
               <button
                 onClick={() => refetch()}
-                className="rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-ink-foreground transition-transform hover:-translate-y-0.5"
+                className="rounded-full bg-brand px-3 py-1.5 text-xs font-medium text-ink-foreground transition-transform hover:-translate-y-0.5"
               >
                 Try again
               </button>
             </div>
           ) : people.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 rounded-[min(1.4vw,16px)] bg-card py-16 ring-1 ring-ink/5">
+            <div className="flex flex-col items-center gap-2 rounded-[min(1.4vw,16px)] bg-card py-16 ring-1 ring-ink/10">
               <Search className="size-6 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
-                No people match these filters yet.
+                {hasFilters
+                  ? "No one matches these filters yet."
+                  : "No one saved yet. Add someone you found online to get started."}
               </p>
             </div>
           ) : (
