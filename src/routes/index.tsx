@@ -157,7 +157,7 @@ function Directory() {
             <div className="hidden items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 ring-1 ring-ink/5 sm:flex">
               <Users className="size-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
-                {total} people
+                {total} saved
               </span>
             </div>
             <Link
