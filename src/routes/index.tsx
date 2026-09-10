@@ -183,11 +183,11 @@ function Directory() {
       <div className="bg-silver">
         <div className="mx-auto max-w-6xl px-4 pt-8 pb-5 sm:px-6">
           <h1 className="font-display text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-            Find your people
+            Your saved people
           </h1>
-          <p className="mt-2 max-w-[48ch] text-pretty text-base text-muted-foreground">
-            A fast, clean index of the Flock community. Filter by category,
-            search tags, and browse the roster.
+          <p className="mt-2 max-w-[52ch] text-pretty text-base text-muted-foreground">
+            A personal cache of people you found online. Search by name or the
+            context you jotted down, then narrow it with a category and tags.
           </p>
 
           {/* Search */}
