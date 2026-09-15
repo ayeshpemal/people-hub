@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { AlertTriangle, ArrowLeft, Check, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
+import { AlertTriangle, Check, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
 
 import { fetchCategories, fetchTags } from "@/lib/directory";
 import {
@@ -15,6 +15,7 @@ import {
   type TaxonomyKind,
 } from "@/lib/taxonomy";
 import { useAuth } from "@/lib/auth";
+import { AppFooter, AppHeader } from "@/components/app-shell";
 
 export const Route = createFileRoute("/manage-data")({
   head: () => ({
@@ -41,20 +42,7 @@ export const Route = createFileRoute("/manage-data")({
 function ManageData() {
   return (
     <div className="min-h-screen bg-silver">
-      <div className="sticky top-0 z-20 border-b border-ink/5 bg-silver/90 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-3 sm:px-6">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 text-sm font-medium text-ink ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5"
-          >
-            <ArrowLeft className="size-4" />
-            Directory
-          </Link>
-          <span className="rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold tracking-widest text-brand uppercase">
-            Manage data
-          </span>
-        </div>
-      </div>
+      <AppHeader backTo="/" backLabel="Directory" currentLabel="Manage data" />
 
       <div className="mx-auto max-w-5xl px-4 pt-8 pb-16 sm:px-6">
         <h1 className="font-display text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
@@ -87,6 +75,7 @@ function ManageData() {
           />
         </div>
       </div>
+      <AppFooter />
     </div>
   );
 }

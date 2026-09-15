@@ -1,23 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import {
-  AlertTriangle,
-  ChevronDown,
-  Loader2,
-  Pencil,
-  Plus,
-  Search,
-  Settings2,
-  Trash2,
-  Users,
-} from "lucide-react";
+import { AlertTriangle, ChevronDown, Loader2, Pencil, Search, Trash2 } from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { FilterSelect } from "@/components/filter-select";
 import { EditPersonDialog } from "@/components/edit-person-dialog";
 import { deletePerson } from "@/lib/person-mutations";
 import { useAuth } from "@/lib/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { AppFooter, AppHeader } from "@/components/app-shell";
 
 import {
   fetchCategories,
@@ -130,49 +120,7 @@ function Directory() {
 
   return (
     <div className="min-h-screen bg-silver font-sans text-ink antialiased">
-      {/* App bar */}
-      <div className="sticky top-0 z-20 bg-silver/85 backdrop-blur-sm ring-1 ring-ink/10">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-2">
-            <div className="grid size-8 shrink-0 place-items-center rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink font-display text-sm font-semibold text-ink-foreground shadow-inner">
-              PC
-            </div>
-            <span className="font-display text-lg font-semibold tracking-tight">Person Cache</span>
-            <span className="mt-0.5 hidden rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-brand sm:inline">
-              Saved people
-            </span>
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <div className="items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 ring-1 ring-ink/10 flex">
-              <Users className="size-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
-                {total} <span className="hidden md:inline">saved</span>
-              </span>
-            </div>
-            <Link
-              to="/manage-data"
-              className="items-center gap-1.5 rounded-[min(1vw,10px)] bg-card px-3 py-2 text-sm font-medium text-ink ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5 sm:inline-flex"
-            >
-              <Settings2 className="size-4 shrink-0" />
-              <span className="hidden md:inline">Manage data</span>
-            </Link>
-            <button
-              type="button"
-              onClick={() => void supabase.auth.signOut()}
-              className="rounded-[min(1vw,10px)] px-2 py-2 text-xs text-muted-foreground hover:text-ink"
-            >
-              Sign out
-            </button>
-            <Link
-              to="/add-person"
-              className="inline-flex items-center gap-1.5 rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink px-3 py-2 text-sm font-medium text-ink-foreground shadow-inner ring-1 ring-brand/40 transition-transform hover:-translate-y-0.5"
-            >
-              <Plus className="size-4 shrink-0" />
-              <span className="hidden md:inline">Save someone</span>
-            </Link>
-          </div>
-        </div>
-      </div>
+      <AppHeader total={total} />
 
       {/* Header */}
       <div className="bg-silver">
@@ -448,6 +396,7 @@ function Directory() {
           </div>
         </div>
       )}
+      <AppFooter />
     </div>
   );
 }

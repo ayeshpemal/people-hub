@@ -1,13 +1,14 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowLeft, ImageUp, Loader2 } from "lucide-react";
+import { ImageUp, Loader2 } from "lucide-react";
 import { fetchCategories, fetchTags } from "@/lib/directory";
 import { createPerson } from "@/lib/add-person";
 import { compressImage } from "@/lib/image-compression";
 import { CreatableSelect } from "@/components/creatable-select";
 import { findOrCreateTaxonomyItem, type TaxonomyKind } from "@/lib/taxonomy";
 import { useAuth } from "@/lib/auth";
+import { AppFooter, AppHeader } from "@/components/app-shell";
 
 export const Route = createFileRoute("/add-person")({
   head: () => ({
@@ -106,17 +107,7 @@ function AddPerson() {
 
   return (
     <div className="min-h-screen bg-silver font-sans text-ink antialiased">
-      <div className="sticky top-0 z-20 bg-silver/85 backdrop-blur-sm ring-1 ring-ink/10">
-        <div className="mx-auto flex max-w-2xl items-center gap-3 px-4 py-3 sm:px-6">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground ring-1 ring-ink/10 transition-transform hover:-translate-y-0.5"
-          >
-            <ArrowLeft className="size-3.5" /> Directory
-          </Link>
-          <span className="font-display text-lg font-semibold tracking-tight">Add a person</span>
-        </div>
-      </div>
+      <AppHeader backTo="/" backLabel="Directory" currentLabel="Add a person" />
 
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
         <h1 className="font-display text-3xl font-semibold tracking-tight text-balance">
@@ -256,6 +247,7 @@ function AddPerson() {
           </div>
         </form>
       </div>
+      <AppFooter />
     </div>
   );
 }
