@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { requireUserId } from "@/lib/auth";
 
 export interface Category {
   id: string;
@@ -21,7 +22,6 @@ export interface DirectoryPerson {
   tagIds: string[];
 }
 
-
 export interface PeoplePage {
   people: DirectoryPerson[];
   total: number;
@@ -30,19 +30,15 @@ export interface PeoplePage {
 export const PAGE_SIZE = 20;
 
 export async function fetchCategories(): Promise<Category[]> {
-  const { data, error } = await supabase
-    .from("categories")
-    .select("id, name")
-    .order("name");
+  await requireUserId();
+  const { data, error } = await supabase.from("categories").select("id, name").order("name");
   if (error) throw error;
   return data ?? [];
 }
 
 export async function fetchTags(): Promise<Tag[]> {
-  const { data, error } = await supabase
-    .from("tags")
-    .select("id, name")
-    .order("name");
+  await requireUserId();
+  const { data, error } = await supabase.from("tags").select("id, name").order("name");
   if (error) throw error;
   return data ?? [];
 }
@@ -120,7 +116,6 @@ export async function fetchPeople({
       tagIds: tagJoins.map((pt) => pt.tag_id),
     };
   });
-
 
   return { people, total: count ?? 0 };
 }

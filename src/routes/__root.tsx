@@ -11,6 +11,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { AuthProvider, useAuth } from "@/lib/auth";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 
 function NotFoundComponent() {
   return (
@@ -132,8 +134,26 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <AuthProvider>
+        <ProtectedOutlet />
+      </AuthProvider>
     </QueryClientProvider>
   );
+}
+
+function ProtectedOutlet() {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!loading && !user && location.pathname !== "/login")
+      void navigate({ to: "/login", replace: true });
+  }, [loading, user, location.pathname, navigate]);
+  if (loading || (!user && location.pathname !== "/login"))
+    return (
+      <div className="grid min-h-screen place-items-center bg-silver text-sm text-muted-foreground">
+        Loading…
+      </div>
+    );
+  return <Outlet />;
 }

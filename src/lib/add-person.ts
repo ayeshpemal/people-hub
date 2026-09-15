@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { compressImage } from "@/lib/image-compression";
+import { requireUserId } from "@/lib/auth";
 
 const BUCKET = "avatars";
 const URL_TTL_SECONDS = 60 * 60 * 24 * 365 * 10; // 10 years
@@ -19,11 +20,12 @@ export async function createPerson({
   tagIds,
   image,
 }: NewPersonInput): Promise<{ id: string }> {
+  const user_id = await requireUserId();
   let imageUrl: string | null = null;
 
   if (image) {
     const compressed = await compressImage(image);
-    const path = `${crypto.randomUUID()}.${compressed.type === "image/webp" ? "webp" : "jpg"}`;
+    const path = `${user_id}/${crypto.randomUUID()}.${compressed.type === "image/webp" ? "webp" : "jpg"}`;
 
     const { error: uploadError } = await supabase.storage
       .from(BUCKET)
@@ -48,6 +50,7 @@ export async function createPerson({
       description: description.trim() || null,
       category_id: categoryId,
       image_url: imageUrl,
+      user_id,
     })
     .select("id")
     .single();

@@ -16,6 +16,8 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { FilterSelect } from "@/components/filter-select";
 import { EditPersonDialog } from "@/components/edit-person-dialog";
 import { deletePerson } from "@/lib/person-mutations";
+import { useAuth } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 
 import {
   fetchCategories,
@@ -49,6 +51,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Directory() {
+  const { user } = useAuth();
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [search, setSearch] = useState("");
@@ -58,15 +61,15 @@ function Directory() {
   const debouncedSearch = useDebouncedValue(search, 300);
 
   const { data: categories = [] } = useQuery({
-    queryKey: ["categories"],
+    queryKey: ["categories", user?.id],
     queryFn: fetchCategories,
   });
   const { data: tags = [] } = useQuery({
-    queryKey: ["tags"],
+    queryKey: ["tags", user?.id],
     queryFn: fetchTags,
   });
   const { data, isFetching, isPending, isError, error, refetch } = useQuery({
-    queryKey: ["people", categoryId, selectedTagIds, debouncedSearch, limit],
+    queryKey: ["people", user?.id, categoryId, selectedTagIds, debouncedSearch, limit],
     queryFn: () =>
       fetchPeople({
         categoryId,
@@ -153,6 +156,13 @@ function Directory() {
               <Settings2 className="size-4 shrink-0" />
               <span className="hidden md:inline">Manage data</span>
             </Link>
+            <button
+              type="button"
+              onClick={() => void supabase.auth.signOut()}
+              className="rounded-[min(1vw,10px)] px-2 py-2 text-xs text-muted-foreground hover:text-ink"
+            >
+              Sign out
+            </button>
             <Link
               to="/add-person"
               className="inline-flex items-center gap-1.5 rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink px-3 py-2 text-sm font-medium text-ink-foreground shadow-inner ring-1 ring-brand/40 transition-transform hover:-translate-y-0.5"

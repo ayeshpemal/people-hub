@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Category, Tag } from "@/lib/directory";
+import { requireUserId } from "@/lib/auth";
 
 export type TaxonomyKind = "categories" | "tags";
 export type TaxonomyItem = Category | Tag;
@@ -18,22 +19,18 @@ export function validateName(
     return { ok: false, error: `Keep it to ${MAX_NAME_LENGTH} characters or fewer.` };
 
   const clash = existing.some(
-    (item) =>
-      item.id !== ignoreId &&
-      item.name.trim().toLowerCase() === name.toLowerCase(),
+    (item) => item.id !== ignoreId && item.name.trim().toLowerCase() === name.toLowerCase(),
   );
   if (clash) return { ok: false, error: `"${name}" already exists.` };
 
   return { ok: true, name };
 }
 
-export async function createTaxonomyItem(
-  kind: TaxonomyKind,
-  name: string,
-): Promise<TaxonomyItem> {
+export async function createTaxonomyItem(kind: TaxonomyKind, name: string): Promise<TaxonomyItem> {
+  const user_id = await requireUserId();
   const { data, error } = await supabase
     .from(kind)
-    .insert({ name })
+    .insert({ name, user_id })
     .select("id, name")
     .single();
   if (error) throw error;
@@ -45,6 +42,7 @@ export async function renameTaxonomyItem(
   id: string,
   name: string,
 ): Promise<TaxonomyItem> {
+  await requireUserId();
   const { data, error } = await supabase
     .from(kind)
     .update({ name })
@@ -55,18 +53,15 @@ export async function renameTaxonomyItem(
   return data;
 }
 
-export async function deleteTaxonomyItem(
-  kind: TaxonomyKind,
-  id: string,
-): Promise<void> {
+export async function deleteTaxonomyItem(kind: TaxonomyKind, id: string): Promise<void> {
+  await requireUserId();
   const { error } = await supabase.from(kind).delete().eq("id", id);
   if (error) throw error;
 }
 
 /** How many profiles a category or tag is currently attached to. */
-export async function fetchUsageCounts(
-  kind: TaxonomyKind,
-): Promise<Record<string, number>> {
+export async function fetchUsageCounts(kind: TaxonomyKind): Promise<Record<string, number>> {
+  await requireUserId();
   const counts: Record<string, number> = {};
   if (kind === "categories") {
     const { data, error } = await supabase
@@ -111,6 +106,7 @@ export async function findOrCreateTaxonomyItem(
   kind: TaxonomyKind,
   raw: string,
 ): Promise<TaxonomyItem> {
+  const user_id = await requireUserId();
   const name = normalizeName(kind, raw);
   if (!name) throw new Error("Please enter a name.");
   if (name.length > MAX_NAME_LENGTH)
@@ -127,7 +123,7 @@ export async function findOrCreateTaxonomyItem(
 
   const { data, error } = await supabase
     .from(kind)
-    .insert({ name })
+    .insert({ name, user_id })
     .select("id, name")
     .single();
   if (error) {

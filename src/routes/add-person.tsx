@@ -6,10 +6,8 @@ import { fetchCategories, fetchTags } from "@/lib/directory";
 import { createPerson } from "@/lib/add-person";
 import { compressImage } from "@/lib/image-compression";
 import { CreatableSelect } from "@/components/creatable-select";
-import {
-  findOrCreateTaxonomyItem,
-  type TaxonomyKind,
-} from "@/lib/taxonomy";
+import { findOrCreateTaxonomyItem, type TaxonomyKind } from "@/lib/taxonomy";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/add-person")({
   head: () => ({
@@ -35,10 +33,10 @@ export const Route = createFileRoute("/add-person")({
 
 const field =
   "w-full rounded-[min(1vw,10px)] bg-card px-3 py-2.5 text-sm text-ink outline-none ring-1 ring-ink/10 placeholder:text-muted-foreground focus:ring-2 focus:ring-brand/40";
-const labelCls =
-  "text-[11px] font-semibold uppercase tracking-widest text-muted-foreground";
+const labelCls = "text-[11px] font-semibold uppercase tracking-widest text-muted-foreground";
 
 function AddPerson() {
+  const { user } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -52,12 +50,11 @@ function AddPerson() {
   const [previewInfo, setPreviewInfo] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
 
-
   const { data: categories = [] } = useQuery({
-    queryKey: ["categories"],
+    queryKey: ["categories", user?.id],
     queryFn: fetchCategories,
   });
-  const { data: tags = [] } = useQuery({ queryKey: ["tags"], queryFn: fetchTags });
+  const { data: tags = [] } = useQuery({ queryKey: ["tags", user?.id], queryFn: fetchTags });
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -94,15 +91,12 @@ function AddPerson() {
         }`,
       );
     } catch (error) {
-      setPreviewError(
-        error instanceof Error ? error.message : "Could not prepare that image.",
-      );
+      setPreviewError(error instanceof Error ? error.message : "Could not prepare that image.");
       setImage(null);
     } finally {
       setIsCompressing(false);
     }
   };
-
 
   const createTaxonomy = async (kind: TaxonomyKind, value: string) => {
     const item = await findOrCreateTaxonomyItem(kind, value);
@@ -120,9 +114,7 @@ function AddPerson() {
           >
             <ArrowLeft className="size-3.5" /> Directory
           </Link>
-          <span className="font-display text-lg font-semibold tracking-tight">
-            Add a person
-          </span>
+          <span className="font-display text-lg font-semibold tracking-tight">Add a person</span>
         </div>
       </div>
 
@@ -131,8 +123,8 @@ function AddPerson() {
           Add a person
         </h1>
         <p className="mt-2 text-pretty text-sm text-muted-foreground">
-          Photos are resized to 1280px and squeezed under 500 KB right here in
-          your browser before they are uploaded.
+          Photos are resized to 1280px and squeezed under 500 KB right here in your browser before
+          they are uploaded.
         </p>
 
         <form
@@ -142,7 +134,6 @@ function AddPerson() {
             if (!name.trim() || mutation.isPending || isCompressing) return;
             mutation.mutate();
           }}
-
         >
           <div className="flex flex-col gap-1.5">
             <label className={labelCls} htmlFor="name">
@@ -217,7 +208,7 @@ function AddPerson() {
                   className="size-20 shrink-0 rounded-[min(1.4vw,16px)] object-cover ring-1 ring-ink/10"
                 />
               ) : (
-                <div className="grid size-20 shrink-0 place-items-center rounded-[min(1.4vw,16px)] bg-gradient-to-br from-lilac to-brand/30">
+                <div className="grid size-20 shrink-0 place-items-center rounded-[min(1.4vw,16px)] bg-linear-to-br from-lilac to-brand/30">
                   <ImageUp className="size-5 text-ink-foreground/80" />
                 </div>
               )}
@@ -230,13 +221,9 @@ function AddPerson() {
               />
             </div>
             {previewInfo && (
-              <p className="text-xs text-muted-foreground">
-                Optimised: {previewInfo}
-              </p>
+              <p className="text-xs text-muted-foreground">Optimised: {previewInfo}</p>
             )}
-            {previewError && (
-              <p className="text-xs text-destructive">{previewError}</p>
-            )}
+            {previewError && <p className="text-xs text-destructive">{previewError}</p>}
           </div>
 
           {mutation.isError && (
@@ -251,7 +238,7 @@ function AddPerson() {
             <button
               type="submit"
               disabled={mutation.isPending || isCompressing || !name.trim()}
-              className="inline-flex items-center gap-2 rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink px-4 py-2 text-sm font-medium text-ink-foreground shadow-inner ring-1 ring-brand/40 transition-transform duration-200 hover:-translate-y-0.5 disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-[min(1vw,10px)] bg-linear-to-br from-brand to-pink px-4 py-2 text-sm font-medium text-ink-foreground shadow-inner ring-1 ring-brand/40 transition-transform duration-200 hover:-translate-y-0.5 disabled:opacity-60"
             >
               {(mutation.isPending || isCompressing) && (
                 <Loader2 className="size-4 shrink-0 animate-spin" />

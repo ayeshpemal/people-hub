@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AddPersonRouteImport } from './routes/add-person'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as ManageDataRouteImport } from './routes/manage-data'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const AddPersonRoute = AddPersonRouteImport.update({
   path: '/add-person',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ManageDataRoute = ManageDataRouteImport.update({
   id: '/manage-data',
   path: '/manage-data',
@@ -32,30 +38,34 @@ const ManageDataRoute = ManageDataRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/add-person': typeof AddPersonRoute
+  '/login': typeof LoginRoute
   '/manage-data': typeof ManageDataRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/add-person': typeof AddPersonRoute
+  '/login': typeof LoginRoute
   '/manage-data': typeof ManageDataRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/add-person': typeof AddPersonRoute
+  '/login': typeof LoginRoute
   '/manage-data': typeof ManageDataRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/add-person' | '/manage-data'
+  fullPaths: '/' | '/add-person' | '/login' | '/manage-data'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/add-person' | '/manage-data'
-  id: '__root__' | '/' | '/add-person' | '/manage-data'
+  to: '/' | '/add-person' | '/login' | '/manage-data'
+  id: '__root__' | '/' | '/add-person' | '/login' | '/manage-data'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AddPersonRoute: typeof AddPersonRoute
+  LoginRoute: typeof LoginRoute
   ManageDataRoute: typeof ManageDataRoute
 }
 
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AddPersonRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/manage-data': {
       id: '/manage-data'
       path: '/manage-data'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddPersonRoute: AddPersonRoute,
+  LoginRoute: LoginRoute,
   ManageDataRoute: ManageDataRoute,
 }
 export const routeTree = rootRouteImport

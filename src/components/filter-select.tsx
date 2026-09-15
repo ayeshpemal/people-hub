@@ -52,9 +52,7 @@ export function FilterSelect({
   const pick = (optionId: string) => {
     if (multi) {
       onChange(
-        value.includes(optionId)
-          ? value.filter((v) => v !== optionId)
-          : [...value, optionId],
+        value.includes(optionId) ? value.filter((v) => v !== optionId) : [...value, optionId],
       );
     } else {
       onChange(value.includes(optionId) ? [] : [optionId]);

@@ -2,19 +2,15 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ImageUp, Loader2, X } from "lucide-react";
 import { CreatableSelect } from "@/components/creatable-select";
-import {
-  fetchCategories,
-  fetchTags,
-  type DirectoryPerson,
-} from "@/lib/directory";
+import { useAuth } from "@/lib/auth";
+import { fetchCategories, fetchTags, type DirectoryPerson } from "@/lib/directory";
 import { compressImage } from "@/lib/image-compression";
 import { updatePerson } from "@/lib/person-mutations";
 import { findOrCreateTaxonomyItem, type TaxonomyKind } from "@/lib/taxonomy";
 
 const field =
   "w-full rounded-[min(1vw,10px)] bg-card px-3 py-2.5 text-sm text-ink outline-none ring-1 ring-ink/10 placeholder:text-muted-foreground focus:ring-2 focus:ring-brand/40";
-const labelCls =
-  "text-[11px] font-semibold uppercase tracking-widest text-muted-foreground";
+const labelCls = "text-[11px] font-semibold uppercase tracking-widest text-muted-foreground";
 
 type Props = {
   person: DirectoryPerson;
@@ -23,6 +19,7 @@ type Props = {
 };
 
 export function EditPersonDialog({ person, onClose, onSaved }: Props) {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const [name, setName] = useState(person.name);
@@ -36,10 +33,10 @@ export function EditPersonDialog({ person, onClose, onSaved }: Props) {
   const [isCompressing, setIsCompressing] = useState(false);
 
   const { data: categories = [] } = useQuery({
-    queryKey: ["categories"],
+    queryKey: ["categories", user?.id],
     queryFn: fetchCategories,
   });
-  const { data: tags = [] } = useQuery({ queryKey: ["tags"], queryFn: fetchTags });
+  const { data: tags = [] } = useQuery({ queryKey: ["tags", user?.id], queryFn: fetchTags });
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -67,9 +64,7 @@ export function EditPersonDialog({ person, onClose, onSaved }: Props) {
         )} KB · ${compressed.type === "image/webp" ? "WebP" : "JPEG"}`,
       );
     } catch (error) {
-      setPreviewError(
-        error instanceof Error ? error.message : "Could not prepare that image.",
-      );
+      setPreviewError(error instanceof Error ? error.message : "Could not prepare that image.");
       setImage(null);
       setPreview(person.image_url);
     } finally {
@@ -101,8 +96,7 @@ export function EditPersonDialog({ person, onClose, onSaved }: Props) {
         description: description.trim() || null,
         image_url: imageUrl,
         category_id: categoryId || null,
-        category:
-          categories.find((c) => c.id === categoryId)?.name ?? null,
+        category: categories.find((c) => c.id === categoryId)?.name ?? null,
         tagIds,
         tags: tags
           .filter((t) => tagIds.includes(t.id))
@@ -128,9 +122,7 @@ export function EditPersonDialog({ person, onClose, onSaved }: Props) {
     >
       <div className="my-8 w-full max-w-lg rounded-[min(1.4vw,16px)] bg-silver p-5 ring-1 ring-ink/10">
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-xl font-semibold tracking-tight">
-            Edit profile
-          </h2>
+          <h2 className="font-display text-xl font-semibold tracking-tight">Edit profile</h2>
           <button
             type="button"
             aria-label="Close"
@@ -233,13 +225,9 @@ export function EditPersonDialog({ person, onClose, onSaved }: Props) {
               />
             </div>
             {previewInfo && (
-              <p className="text-xs text-muted-foreground">
-                Optimised: {previewInfo}
-              </p>
+              <p className="text-xs text-muted-foreground">Optimised: {previewInfo}</p>
             )}
-            {previewError && (
-              <p className="text-xs text-destructive">{previewError}</p>
-            )}
+            {previewError && <p className="text-xs text-destructive">{previewError}</p>}
           </div>
 
           {mutation.isError && (

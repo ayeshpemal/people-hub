@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { compressImage } from "@/lib/image-compression";
+import { requireUserId } from "@/lib/auth";
 
 const BUCKET = "avatars";
 const URL_TTL_SECONDS = 60 * 60 * 24 * 365 * 10; // 10 years
@@ -27,16 +28,15 @@ async function removeStoredImage(url: string | null): Promise<void> {
 }
 
 async function uploadCompressed(image: File): Promise<string> {
+  const user_id = await requireUserId();
   const compressed = await compressImage(image);
-  const path = `${crypto.randomUUID()}.${compressed.type === "image/webp" ? "webp" : "jpg"}`;
+  const path = `${user_id}/${crypto.randomUUID()}.${compressed.type === "image/webp" ? "webp" : "jpg"}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from(BUCKET)
-    .upload(path, compressed.file, {
-      contentType: compressed.type,
-      cacheControl: "31536000",
-      upsert: false,
-    });
+  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, compressed.file, {
+    contentType: compressed.type,
+    cacheControl: "31536000",
+    upsert: false,
+  });
   if (uploadError) throw uploadError;
 
   const { data: signed, error: signError } = await supabase.storage
@@ -66,6 +66,7 @@ export async function updatePerson({
   newImage,
   currentImageUrl,
 }: UpdatePersonInput): Promise<{ imageUrl: string | null }> {
+  await requireUserId();
   let imageUrl = currentImageUrl;
 
   if (newImage) {
@@ -85,10 +86,7 @@ export async function updatePerson({
     .eq("id", id);
   if (updateError) throw updateError;
 
-  const { error: clearError } = await supabase
-    .from("person_tags")
-    .delete()
-    .eq("person_id", id);
+  const { error: clearError } = await supabase.from("person_tags").delete().eq("person_id", id);
   if (clearError) throw clearError;
 
   if (tagIds.length > 0) {
@@ -101,10 +99,7 @@ export async function updatePerson({
   return { imageUrl };
 }
 
-export async function deletePerson(
-  id: string,
-  imageUrl: string | null,
-): Promise<void> {
+export async function deletePerson(id: string, imageUrl: string | null): Promise<void> {
   await removeStoredImage(imageUrl);
   const { error } = await supabase.from("people").delete().eq("id", id);
   if (error) throw error;

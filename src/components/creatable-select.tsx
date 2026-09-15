@@ -46,10 +46,7 @@ export function CreatableSelect({
 
   const normalized = normalizeName(kind, query);
   const filtered = useMemo(
-    () =>
-      items.filter((item) =>
-        item.name.toLowerCase().includes(query.trim().toLowerCase()),
-      ),
+    () => items.filter((item) => item.name.toLowerCase().includes(query.trim().toLowerCase())),
     [items, query],
   );
   const exactMatch = items.find(
@@ -62,11 +59,7 @@ export function CreatableSelect({
   const pick = (itemId: string) => {
     setError(null);
     if (multi) {
-      onChange(
-        value.includes(itemId)
-          ? value.filter((v) => v !== itemId)
-          : [...value, itemId],
-      );
+      onChange(value.includes(itemId) ? value.filter((v) => v !== itemId) : [...value, itemId]);
     } else {
       onChange(value.includes(itemId) ? [] : [itemId]);
       setOpen(false);

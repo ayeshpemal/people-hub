@@ -1,16 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import {
-  AlertTriangle,
-  ArrowLeft,
-  Check,
-  Loader2,
-  Pencil,
-  Plus,
-  Trash2,
-  X,
-} from "lucide-react";
+import { AlertTriangle, ArrowLeft, Check, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
 
 import { fetchCategories, fetchTags } from "@/lib/directory";
 import {
@@ -23,6 +14,7 @@ import {
   type TaxonomyItem,
   type TaxonomyKind,
 } from "@/lib/taxonomy";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/manage-data")({
   head: () => ({
@@ -69,8 +61,7 @@ function ManageData() {
           Categories &amp; tags
         </h1>
         <p className="mt-2 max-w-[56ch] text-pretty text-muted-foreground">
-          Keep the directory tidy. Changes here apply everywhere people are
-          listed.
+          Keep the directory tidy. Changes here apply everywhere people are listed.
         </p>
 
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -108,8 +99,9 @@ interface PanelProps {
 }
 
 function TaxonomyPanel({ kind, title, blurb, deleteWarning }: PanelProps) {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
-  const queryKey = [kind] as const;
+  const queryKey = [kind, user?.id] as const;
 
   const {
     data: items = [],
@@ -123,7 +115,7 @@ function TaxonomyPanel({ kind, title, blurb, deleteWarning }: PanelProps) {
   });
 
   const { data: usage = {} } = useQuery({
-    queryKey: [kind, "usage"],
+    queryKey: [kind, user?.id, "usage"],
     queryFn: () => fetchUsageCounts(kind),
   });
 
@@ -145,10 +137,10 @@ function TaxonomyPanel({ kind, title, blurb, deleteWarning }: PanelProps) {
       await queryClient.cancelQueries({ queryKey });
       const previous = queryClient.getQueryData<TaxonomyItem[]>(queryKey) ?? [];
       const optimistic: TaxonomyItem = { id: `optimistic-${name}`, name };
-      queryClient.setQueryData<TaxonomyItem[]>(queryKey, [
-        ...previous,
-        optimistic,
-      ].sort((a, b) => a.name.localeCompare(b.name)));
+      queryClient.setQueryData<TaxonomyItem[]>(
+        queryKey,
+        [...previous, optimistic].sort((a, b) => a.name.localeCompare(b.name)),
+      );
       return { previous };
     },
     onError: (err, _name, context) => {
@@ -160,8 +152,7 @@ function TaxonomyPanel({ kind, title, blurb, deleteWarning }: PanelProps) {
   });
 
   const renameMutation = useMutation({
-    mutationFn: ({ id, name }: { id: string; name: string }) =>
-      renameTaxonomyItem(kind, id, name),
+    mutationFn: ({ id, name }: { id: string; name: string }) => renameTaxonomyItem(kind, id, name),
     onMutate: async ({ id, name }) => {
       await queryClient.cancelQueries({ queryKey });
       const previous = queryClient.getQueryData<TaxonomyItem[]>(queryKey) ?? [];
@@ -293,10 +284,7 @@ function TaxonomyPanel({ kind, title, blurb, deleteWarning }: PanelProps) {
             const count = usage[item.id] ?? 0;
             const saving = item.id.startsWith("optimistic-");
             return (
-              <div
-                key={item.id}
-                className="flex items-center gap-2 py-2.5 text-sm"
-              >
+              <div key={item.id} className="flex items-center gap-2 py-2.5 text-sm">
                 {editingId === item.id ? (
                   <>
                     <input
@@ -327,9 +315,7 @@ function TaxonomyPanel({ kind, title, blurb, deleteWarning }: PanelProps) {
                   </>
                 ) : (
                   <>
-                    <span className="truncate font-medium text-ink">
-                      {item.name}
-                    </span>
+                    <span className="truncate font-medium text-ink">{item.name}</span>
                     {saving && (
                       <Loader2 className="size-3.5 shrink-0 animate-spin text-muted-foreground" />
                     )}
@@ -367,14 +353,9 @@ function TaxonomyPanel({ kind, title, blurb, deleteWarning }: PanelProps) {
       {pendingDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-sm rounded-[min(1.4vw,16px)] bg-card p-5 ring-1 ring-ink/10">
-            <h3 className="font-display text-base font-semibold text-ink">
-              Are you sure?
-            </h3>
+            <h3 className="font-display text-base font-semibold text-ink">Are you sure?</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              {deleteWarning(
-                pendingDelete.name,
-                usage[pendingDelete.id] ?? 0,
-              )}
+              {deleteWarning(pendingDelete.name, usage[pendingDelete.id] ?? 0)}
             </p>
             <div className="mt-5 flex justify-end gap-2">
               <button
@@ -403,8 +384,7 @@ function TaxonomyPanel({ kind, title, blurb, deleteWarning }: PanelProps) {
 function readableError(err: unknown, fallback: string) {
   if (err && typeof err === "object" && "message" in err) {
     const message = String((err as { message: unknown }).message);
-    if (message.toLowerCase().includes("duplicate"))
-      return "That name already exists.";
+    if (message.toLowerCase().includes("duplicate")) return "That name already exists.";
     return message;
   }
   return fallback;
