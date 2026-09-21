@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { AlertTriangle, ChevronDown, Loader2, Pencil, Search, Trash2 } from "lucide-react";
+import { AlertTriangle, Loader2, Pencil, Search, Trash2 } from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { FilterSelect } from "@/components/filter-select";
 import { EditPersonDialog } from "@/components/edit-person-dialog";
 import { deletePerson } from "@/lib/person-mutations";
 import { useAuth } from "@/lib/auth";
 import { AppFooter, AppHeader } from "@/components/app-shell";
+import { Pagination } from "@/components/pagination";
 
 import {
   fetchCategories,
@@ -45,7 +46,7 @@ function Directory() {
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [search, setSearch] = useState("");
-  const [limit, setLimit] = useState(PAGE_SIZE);
+  const [page, setPage] = useState(0);
 
   // Debounced so typing doesn't fire a database query per keystroke.
   const debouncedSearch = useDebouncedValue(search, 300);
@@ -59,13 +60,13 @@ function Directory() {
     queryFn: fetchTags,
   });
   const { data, isFetching, isPending, isError, error, refetch } = useQuery({
-    queryKey: ["people", user?.id, categoryId, selectedTagIds, debouncedSearch, limit],
+    queryKey: ["people", user?.id, categoryId, selectedTagIds, debouncedSearch, page],
     queryFn: () =>
       fetchPeople({
         categoryId,
         tagIds: selectedTagIds,
         search: debouncedSearch,
-        limit,
+        page,
       }),
     placeholderData: keepPreviousData,
   });
@@ -114,7 +115,11 @@ function Directory() {
     }
   };
 
-  const resetPaging = () => setLimit(PAGE_SIZE);
+  const resetPaging = () => setPage(0);
+
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const hasPrev = page > 0;
+  const hasNext = page < totalPages - 1;
 
   const hasFilters = Boolean(categoryId) || selectedTagIds.length > 0 || search.trim().length > 0;
 
@@ -214,7 +219,7 @@ function Directory() {
         <div className="mx-auto max-w-6xl px-4 pb-6 sm:px-6">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-sm text-muted-foreground">
-              Showing <span className="font-medium text-ink">{people.length}</span> of {total}
+            Showing <span className="font-medium text-ink">{people.length === 0 ? 0 : page * PAGE_SIZE + 1}–{page * PAGE_SIZE + people.length}</span> of {total}
             </span>
             <span className="text-xs text-muted-foreground">Sorted by name</span>
           </div>
@@ -334,19 +339,13 @@ function Directory() {
             </div>
           )}
 
-          {/* Load more */}
-          {total > people.length && (
-            <div className="mt-8 flex justify-center">
-              <button
-                onClick={() => setLimit((prev) => prev + PAGE_SIZE)}
-                disabled={isFetching}
-                className="inline-flex items-center gap-2 rounded-[min(1vw,10px)] bg-linear-to-br from-brand to-pink py-2 pr-4 pl-4 text-sm font-medium text-ink-foreground shadow-inner ring-1 ring-brand/40 transition-transform duration-200 hover:-translate-y-0.5 disabled:opacity-60"
-              >
-                {isFetching ? "Loading…" : `Load ${PAGE_SIZE} more`}
-                <ChevronDown className="size-4 shrink-0" />
-              </button>
-            </div>
-          )}
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            isFetching={isFetching}
+            onPrev={() => setPage((p) => p - 1)}
+            onNext={() => setPage((p) => p + 1)}
+          />
         </div>
       </div>
 

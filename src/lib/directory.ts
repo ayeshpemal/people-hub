@@ -27,7 +27,7 @@ export interface PeoplePage {
   total: number;
 }
 
-export const PAGE_SIZE = 20;
+export const PAGE_SIZE = 10;
 
 export async function fetchCategories(): Promise<Category[]> {
   await requireUserId();
@@ -47,14 +47,14 @@ interface FetchPeopleOptions {
   categoryId: string | null;
   tagIds: string[];
   search: string;
-  limit: number;
+  page: number;
 }
 
 export async function fetchPeople({
   categoryId,
   tagIds,
   search,
-  limit,
+  page,
 }: FetchPeopleOptions): Promise<PeoplePage> {
   // Resolve tag filtering to a set of person ids first so we can keep the
   // main query simple and index-friendly. AND logic: a person must carry
@@ -78,6 +78,9 @@ export async function fetchPeople({
     if (tagPersonIds.length === 0) return { people: [], total: 0 };
   }
 
+  const from = page * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
   let query = supabase
     .from("people")
     .select(
@@ -85,7 +88,7 @@ export async function fetchPeople({
       { count: "exact" },
     )
     .order("name")
-    .range(0, limit - 1);
+    .range(from, to);
 
   if (categoryId) query = query.eq("category_id", categoryId);
   const term = search.trim().replace(/[,()]/g, " ").trim();
