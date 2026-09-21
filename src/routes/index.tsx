@@ -151,7 +151,7 @@ function Directory() {
       </div>
 
       {/* Combined filter bar — search + one category + many tags, all AND-ed */}
-      <div className="sticky top-[57px] z-10 bg-silver/95 backdrop-blur-sm">
+      <div className="sticky top-14.25 z-10 bg-silver/95 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="grid gap-3 border-b border-ink/10 pb-4 sm:grid-cols-2">
             <div>
@@ -275,7 +275,7 @@ function Directory() {
                       className="aspect-square w-full object-cover"
                     />
                   ) : (
-                    <div className="grid aspect-square w-full place-items-center bg-gradient-to-br from-lilac to-brand/30">
+                    <div className="grid aspect-square w-full place-items-center bg-linear-to-br from-lilac to-brand/30">
                       <span className="font-display text-3xl font-semibold text-ink-foreground/80">
                         {person.name.charAt(0)}
                       </span>
@@ -340,7 +340,7 @@ function Directory() {
               <button
                 onClick={() => setLimit((prev) => prev + PAGE_SIZE)}
                 disabled={isFetching}
-                className="inline-flex items-center gap-2 rounded-[min(1vw,10px)] bg-gradient-to-br from-brand to-pink py-2 pr-4 pl-4 text-sm font-medium text-ink-foreground shadow-inner ring-1 ring-brand/40 transition-transform duration-200 hover:-translate-y-0.5 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-[min(1vw,10px)] bg-linear-to-br from-brand to-pink py-2 pr-4 pl-4 text-sm font-medium text-ink-foreground shadow-inner ring-1 ring-brand/40 transition-transform duration-200 hover:-translate-y-0.5 disabled:opacity-60"
               >
                 {isFetching ? "Loading…" : `Load ${PAGE_SIZE} more`}
                 <ChevronDown className="size-4 shrink-0" />
